@@ -1,0 +1,63 @@
+export const collections = [
+  {
+    id: 'sacred-waters',
+    title: 'Sacred Waters & Morning Mist',
+    description: 'A study of dawn rituals, sacred rivers, and the quiet devotion that unfolds before the world awakens.',
+    cover: '/images/taj-mahal.jpg',
+    fallbackImage: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1600&q=85',
+    frameIds: ['taj-mahal', 'varanasi-ghats', 'vrindavan', 'monsoon-tram'],
+    author: {
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    },
+    count: 4,
+    curatedAt: '2024-10-15',
+  },
+  {
+    id: 'celestial-night',
+    title: 'Celestial Whispers & Deep Night',
+    description: 'Frames captured beneath Bortle 1 skies, moonlit peaks, and quiet nocturnal horizons.',
+    cover: '/images/moon.jpg',
+    fallbackImage: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?auto=format&fit=crop&w=1600&q=85',
+    frameIds: ['moon', 'ladakh-night-sky', 'himalayan-silence'],
+    author: {
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    },
+    count: 3,
+    curatedAt: '2024-09-30',
+  },
+  {
+    id: 'analog-warmth',
+    title: 'Golden Hour & Tactile Nostalgia',
+    description: 'Slanting afternoon light, amber shadows, aged timber, and moments that smell of old paper and rain.',
+    cover: '/images/honey.jpg',
+    fallbackImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=85',
+    frameIds: ['honey', 'sunset', 'rainy-cafe-window', 'artisan-hands'],
+    author: {
+      username: 'mirapatel',
+      name: 'Mira Patel',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+    },
+    count: 4,
+    curatedAt: '2024-08-25',
+  },
+  {
+    id: 'silent-horizons',
+    title: 'Silent Horizons & Solitude',
+    description: 'Vast spaces where the ego shrinks and the mind expands: desert dunes, high plateaus, and ocean edges.',
+    cover: '/images/desert-solitude.jpg',
+    fallbackImage: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1600&q=85',
+    frameIds: ['desert-solitude', 'sky', 'prague-dawn'],
+    author: {
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    },
+    count: 3,
+    curatedAt: '2024-07-10',
+  },
+];
+
