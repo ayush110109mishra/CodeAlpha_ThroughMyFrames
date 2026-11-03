@@ -30,7 +30,7 @@ export function LoginPage() {
     setTimeout(() => {
       setIsLoading(false);
       showToast(`Welcome back, ${data.email.split('@')[0]}!`, 'success');
-      navigate('/u/ayushmishra');
+      navigate('/u/ayushmisra');
     }, 700);
   };
 

@@ -210,7 +210,7 @@ export function Navbar() {
                 <p className="font-serif text-ink font-medium text-xs mb-1">
                   Through My Frames 2.0
                 </p>
-                <p>Curated by Ayush Mishra</p>
+                <p>Curated by Ayush Misra</p>
               </div>
             </motion.div>
           </>

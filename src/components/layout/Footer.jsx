@@ -72,7 +72,7 @@ export function Footer() {
             <ul className="space-y-2 text-xs">
               <li>
                 <Link to="/photographer" className="text-ink/80 hover:text-accent transition-colors font-medium">
-                  Ayush Mishra's Story
+                  Ayush Misra's Story
                 </Link>
               </li>
               <li>
@@ -100,7 +100,7 @@ export function Footer() {
             © {APP_INFO.year} {APP_INFO.name}. Crafted with care and slow observation.
           </p>
           <div className="flex items-center gap-4">
-            <span>Built by Ayush Mishra</span>
+            <span>Built by Ayush Misra</span>
             <button
               onClick={scrollToTop}
               className="inline-flex items-center gap-1 hover:text-ink transition-colors p-1"

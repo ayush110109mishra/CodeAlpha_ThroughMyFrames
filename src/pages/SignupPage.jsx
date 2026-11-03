@@ -31,7 +31,7 @@ export function SignupPage() {
     setTimeout(() => {
       setIsLoading(false);
       showToast(`Welcome to Through My Frames, ${data.name}!`, 'success');
-      navigate('/u/ayushmishra');
+      navigate('/u/ayushmisra');
     }, 700);
   };
 

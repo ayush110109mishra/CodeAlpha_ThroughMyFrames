@@ -72,7 +72,7 @@ through-my-frames2.o/
 * **Thoughts**: Open `src/data/thoughts.js` to add short writings, reflections, and quotes.
 * **Journeys & Trips**: Open `src/data/trips.js` to edit travel narratives, dates, and interactive map coordinates.
 * **Collections**: Open `src/data/collections.js` to curate albums.
-* **The Photographer (Ayush Mishra)**: Open `src/data/photographer.js` to update the artist statement, gear list, vertical journey milestones, and contact info.
+* **The Photographer (Ayush Misra)**: Open `src/data/photographer.js` to update the artist statement, gear list, vertical journey milestones, and contact info.
 
 ### 3. Switching to a Real Backend API Later
 All frontend pages and components fetch data exclusively via the asynchronous service layer in `src/services/` (`frameService.js`, `thoughtService.js`, `tripService.js`, etc.). When ready to connect a real backend (e.g. Node/Express, Supabase, or Firebase), simply replace the mock storage methods inside `src/services/` with your real API `fetch()` / `axios` endpoints without modifying any UI components.
@@ -104,7 +104,7 @@ All frontend pages and components fetch data exclusively via the asynchronous se
   - [x] `/u/:username` — Profile with cover, avatar, bio, stats, tabs (Frames, Thoughts, Collections, Saved), and Follow button
   - [x] `/upload` — Create Frame / Thought with drag-and-drop photo, 280-char counter, mood chips, category, location, and live interactive preview
   - [x] `/login` & `/signup` — Elegant split-screen forms with Zod validation
-  - [x] `/photographer` — Dedicated, intimate photographer sanctuary for Ayush Mishra with portrait, philosophy pillars, vertical timeline, gear list, and contact form
+  - [x] `/photographer` — Dedicated, intimate photographer sanctuary for Ayush Misra with portrait, philosophy pillars, vertical timeline, gear list, and contact form
   - [x] `*` — Atmospheric 404 page
 - [x] **Micro-interactions & Polish**:
   - [x] Lenis smooth scrolling

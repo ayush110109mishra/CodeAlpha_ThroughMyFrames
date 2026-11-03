@@ -31,7 +31,7 @@ export const APP_INFO = {
   version: '2.0',
   tagline: 'Photos. Places. Thoughts.',
   subtitle: 'A quiet, curious art-journal and immersive 3D gallery.',
-  author: 'Ayush Mishra',
+  author: 'Ayush Misra',
   year: new Date().getFullYear(),
 };
 
