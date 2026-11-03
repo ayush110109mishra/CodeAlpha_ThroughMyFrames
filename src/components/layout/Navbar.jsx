@@ -116,13 +116,16 @@ export function Navbar() {
 
             {/* Profile Avatar / Login */}
             <Link
-              to="/u/ayushmishra"
+              to="/u/ayushmisra"
               className="hidden sm:flex items-center p-0.5 rounded-full border border-line hover:border-accent transition-colors"
-              title="View Profile (Ayush Mishra)"
+              title="View Profile (Ayush Misra)"
             >
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
-                alt="Ayush Mishra"
+                src="/images/honey.jpg"
+                alt="Ayush Misra"
+                onError={(e) => {
+                  e.target.src = '/images/placeholder.jpg';
+                }}
                 className="w-7 h-7 rounded-full object-cover"
               />
             </Link>
@@ -195,7 +198,7 @@ export function Navbar() {
                     <Plus className="w-4 h-4" /> Create Frame
                   </NavLink>
                   <NavLink
-                    to="/u/ayushmishra"
+                    to="/u/ayushmisra"
                     className="px-4 py-3 rounded-card text-sm font-medium text-ink hover:bg-bg flex items-center gap-2"
                   >
                     <User className="w-4 h-4" /> Photographer Profile

@@ -109,9 +109,9 @@ export const frameService = {
     const newComment = {
       id: `c_${Date.now()}`,
       author: author || {
-        username: 'ayushmishra',
-        name: 'Ayush Mishra',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+        username: 'ayushmisra',
+        name: 'Ayush Misra',
+        avatar: '/images/honey.jpg',
       },
       content,
       createdAt: new Date().toISOString(),

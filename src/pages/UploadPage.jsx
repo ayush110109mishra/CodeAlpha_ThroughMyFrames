@@ -79,9 +79,9 @@ export function UploadPage() {
             focalLength: '35mm',
           },
           author: {
-            username: 'ayushmishra',
-            name: 'Ayush Mishra',
-            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+            username: 'ayushmisra',
+            name: 'Ayush Misra',
+            avatar: '/images/honey.jpg',
           },
         });
         showToast('Frame created and published into the gallery!', 'success');
@@ -113,9 +113,9 @@ export function UploadPage() {
     likes: 0,
     comments: [],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
   };
 
@@ -127,9 +127,9 @@ export function UploadPage() {
     background: 'linear-gradient(135deg, rgba(194, 105, 62, 0.08) 0%, rgba(233, 201, 168, 0.18) 100%)',
     createdAt: new Date().toISOString(),
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
   };
 

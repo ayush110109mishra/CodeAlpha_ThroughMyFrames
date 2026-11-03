@@ -94,9 +94,9 @@ export function FrameDetailPage() {
     const newComment = await frameService.addComment(frame.id, {
       content: text,
       author: {
-        username: 'ayushmishra',
-        name: 'Ayush Mishra',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+        username: 'ayushmisra',
+        name: 'Ayush Misra',
+        avatar: '/images/honey.jpg',
       },
     });
     setComments((prev) => [newComment, ...prev]);
@@ -252,6 +252,9 @@ export function FrameDetailPage() {
               <img
                 src={frame.author?.avatar}
                 alt={frame.author?.name}
+                onError={(e) => {
+                  e.target.src = '/images/placeholder.jpg';
+                }}
                 className="w-11 h-11 rounded-full object-cover border border-line"
               />
               <div>

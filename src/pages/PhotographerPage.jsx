@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 export function PhotographerPage() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(() => photographerData);
   const [activeLightboxFrame, setActiveLightboxFrame] = useState(null);
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');

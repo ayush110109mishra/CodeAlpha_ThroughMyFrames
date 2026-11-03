@@ -6,42 +6,69 @@ import { storage } from '../lib/utils';
 
 const FOLLOWING_KEY = 'user_following';
 
+function normalize(str) {
+  return (str || '').toLowerCase().replace(/[-_\s]/g, '');
+}
+
+function matchesUsername(authorUsername, targetUsername) {
+  if (!authorUsername || !targetUsername) return false;
+  const a = normalize(authorUsername);
+  const t = normalize(targetUsername);
+  if (a === t) return true;
+  // Handle Ayush Misra / Mishra equivalence
+  if ((a === 'ayushmisra' || a === 'ayushmishra') && (t === 'ayushmisra' || t === 'ayushmishra')) {
+    return true;
+  }
+  return false;
+}
+
+function findUser(username) {
+  if (!username) return users[0];
+  const t = normalize(username);
+  const found = users.find((u) => {
+    const uNorm = normalize(u.username);
+    return uNorm === t || matchesUsername(u.username, username);
+  });
+  return found || users[0];
+}
+
 export const userService = {
-  async getUserByUsername(username) {
-    await new Promise((res) => setTimeout(res, 40));
-    const user = users.find((u) => u.username.toLowerCase() === username.toLowerCase());
-    if (!user) return null;
-
+  getUserByUsernameSync(username) {
+    const user = findUser(username);
     const followingList = storage.get(FOLLOWING_KEY, []);
-    const isFollowing = followingList.includes(username);
-
+    const isFollowing = followingList.includes(user.username);
     return {
       ...user,
       isFollowing,
     };
   },
 
+  async getUserByUsername(username) {
+    return this.getUserByUsernameSync(username);
+  },
+
   async getCurrentUser() {
-    return users[0]; // Ayush Mishra
+    return users[0]; // Ayush Misra
   },
 
   async toggleFollow(username) {
+    const user = findUser(username);
     const followingList = storage.get(FOLLOWING_KEY, []);
-    const isFollowing = followingList.includes(username);
+    const isFollowing = followingList.includes(user.username);
     let updated;
     if (isFollowing) {
-      updated = followingList.filter((u) => u !== username);
+      updated = followingList.filter((u) => u !== user.username);
     } else {
-      updated = [...followingList, username];
+      updated = [...followingList, user.username];
     }
     storage.set(FOLLOWING_KEY, updated);
     return { isFollowing: !isFollowing };
   },
 
-  async getUserContent(username) {
-    const userFrames = frames.filter((f) => f.author.username === username);
-    const userThoughts = thoughts.filter((t) => t.author.username === username);
-    const userCollections = collections.filter((c) => c.author.username === username);
+  getUserContentSync(username) {
+    const userFrames = frames.filter((f) => matchesUsername(f.author?.username, username));
+    const userThoughts = thoughts.filter((t) => matchesUsername(t.author?.username, username));
+    const userCollections = collections.filter((c) => matchesUsername(c.author?.username, username));
 
     return {
       frames: userFrames,
@@ -49,5 +76,8 @@ export const userService = {
       collections: userCollections,
     };
   },
-};
 
+  async getUserContent(username) {
+    return this.getUserContentSync(username);
+  },
+};

@@ -3,20 +3,20 @@ export const frames = [
     id: 'taj-mahal',
     image: '/images/taj-mahal.jpg',
     fallbackImage: '/images/placeholder.jpg',
-    moment: '5:12 AM. The Yamuna was still asleep beneath a veil of river mist. Then the dome mirrored the first blush of peach dawn — perfectly silent, eternal.',
+    moment: '7:12 AM. Morning light hitting Taj Mahal with my other 2 college friends admiring the beauty of Taj Mahal.',
     mood: 'Calm',
     category: 'Travel',
     location: 'Agra, Uttar Pradesh',
     camera: {
       body: 'mobile-photography',
     },
-    likes: 342,
+    likes: 1,
     comments: [
       {
         id: 'c1',
         author: {
-          username: 'aaravsen',
-          name: 'Aarav Sen',
+          username: 'Aman',
+          name: 'Aman Misra',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
         },
         content: 'The gradient of morning light reflecting on the marble is otherworldly, Ayush. Incredible framing.',
@@ -25,8 +25,8 @@ export const frames = [
       {
         id: 'c2',
         author: {
-          username: 'elenarostova',
-          name: 'Elena Rostova',
+          username: 'Riya',
+          name: 'Riya Singh',
           avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
         },
         content: 'That silence translates through the screen. Pristine symmetry.',
@@ -34,11 +34,11 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
-    createdAt: '2024-10-14T05:12:00Z',
+    createdAt: '2026-6-1 T07:12:00Z',
     aspectRatio: '16/9',
   },
   {
@@ -48,17 +48,17 @@ export const frames = [
     moment: 'Molten amber leaking onto the horizon line. The tide exhaled, leaving glass behind to drink the final embers of day.',
     mood: 'Nostalgic',
     category: 'Sky',
-    location: 'Gokarna, Karnataka',
+    location: 'vrindavan, Uttar Pradesh',
     camera: {
       body: 'mobile-photography',
     },
-    likes: 620,
+    likes: 1,
     comments: [
       {
         id: 'c5',
         author: {
-          username: 'elenarostova',
-          name: 'Elena Rostova',
+          username: 'Riya',
+          name: 'Riya Singh',
           avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
         },
         content: 'That gradient from deep violet to gold feels like a dream painting.',
@@ -66,11 +66,11 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
-    createdAt: '2024-09-15T18:35:00Z',
+    createdAt: '2026-6-1 T07:12:00Z',
     aspectRatio: '3/4',
   },
   {
@@ -80,18 +80,18 @@ export const frames = [
     moment: 'Cumulus castles towering over the plains after three days of relentless downpour. The scent of petrichor was intoxicating.',
     mood: 'Wanderlust',
     category: 'Sky',
-    location: 'Ranthambore, Rajasthan',
+    location: 'kanpur, Uttar Pradesh',
     camera: {
       body: 'mobile-photography',
     },
-    likes: 298,
+    likes: 2,
     comments: [],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
-    createdAt: '2024-08-22T16:10:00Z',
+    createdAt: '2026-6-1 T07:12:00Z',
     aspectRatio: '4/3',
   },
   {
@@ -105,13 +105,13 @@ export const frames = [
     camera: {
       body: 'mobile-photography',
     },
-    likes: 435,
+    likes: 4,
     comments: [
       {
         id: 'c6',
         author: {
-          username: 'aaravsen',
-          name: 'Aarav Sen',
+          username: 'Aman',
+          name: 'Aman Misra',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
         },
         content: 'The tone curve here is immaculate. Nostalgia distilled.',
@@ -119,11 +119,11 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
-    createdAt: '2024-08-11T16:45:00Z',
+    createdAt: '2026-6-1 T07:12:00Z',
     aspectRatio: '3/4',
   },
   {
@@ -133,29 +133,29 @@ export const frames = [
     moment: 'Seventy years of shaping terracotta clay on a spinning wooden wheel. Every crease on his fingers holds a memory of earth.',
     mood: 'Curious',
     category: 'Portrait',
-    location: 'Kumartuli, Kolkata',
+    location: 'new delhi, India',
     camera: {
       body: 'mobile-photography',
     },
-    likes: 412,
+    likes: 1,
     comments: [
       {
         id: 'c8',
         author: {
-          username: 'ayushmishra',
-          name: 'Ayush Mishra',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+          username: 'ayushmisra',
+          name: 'Ayush Misra',
+          avatar: '/images/honey.jpg',
         },
         content: 'Intimate and dignified. Look at the mud textures on his palms.',
-        createdAt: '2024-04-19T13:45:00Z',
+        createdAt: '2026-6-1 T07:12:00Z',
       },
     ],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
-    createdAt: '2024-04-19T10:15:00Z',
+    createdAt: '2026-6-1 T07:12:00Z',
     aspectRatio: '4/3',
   },
   {
@@ -169,14 +169,14 @@ export const frames = [
     camera: {
       body: 'mobile-photography',
     },
-    likes: 654,
+    likes: 1,
     comments: [],
     author: {
-      username: 'ayushmishra',
-      name: 'Ayush Mishra',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      username: 'ayushmisra',
+      name: 'Ayush Misra',
+      avatar: '/images/honey.jpg',
     },
-    createdAt: '2024-03-04T17:50:00Z',
+    createdAt: '2026-6-1 T07:12:00Z',
     aspectRatio: '16/9',
   },
 ];

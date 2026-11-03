@@ -23,31 +23,31 @@ import { cn } from '../lib/utils';
 
 export function ProfilePage() {
   const { username } = useParams();
-  const [user, setUser] = useState(null);
-  const [content, setContent] = useState({ frames: [], thoughts: [], collections: [] });
+  
+  // Instant synchronous initialization - ZERO loading delay!
+  const [user, setUser] = useState(() => userService.getUserByUsernameSync(username));
+  const [content, setContent] = useState(() => userService.getUserContentSync(username));
   const [savedFrames, setSavedFrames] = useState([]);
   const [activeTab, setActiveTab] = useState('frames'); // 'frames', 'thoughts', 'collections', 'saved'
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followersCount, setFollowersCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(user?.isFollowing || false);
+  const [followersCount, setFollowersCount] = useState(user?.followers || 0);
   const [activeLightboxFrame, setActiveLightboxFrame] = useState(null);
   const { showToast } = useToast();
 
   useEffect(() => {
-    async function loadUser() {
-      const u = await userService.getUserByUsername(username || 'ayushmishra');
-      if (u) {
-        setUser(u);
-        setIsFollowing(u.isFollowing);
-        setFollowersCount(u.followers);
-
-        const userContent = await userService.getUserContent(u.username);
-        setContent(userContent);
-
-        const saved = await frameService.getSavedFrames();
-        setSavedFrames(saved);
-      }
+    const u = userService.getUserByUsernameSync(username);
+    if (u) {
+      setUser(u);
+      setIsFollowing(u.isFollowing);
+      setFollowersCount(u.followers);
+      setContent(userService.getUserContentSync(u.username));
     }
-    loadUser();
+
+    async function loadSaved() {
+      const saved = await frameService.getSavedFrames();
+      setSavedFrames(saved);
+    }
+    loadSaved();
     window.scrollTo(0, 0);
   }, [username]);
 
@@ -66,18 +66,18 @@ export function ProfilePage() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-24 text-muted">
-        Loading journal profile...
-      </div>
-    );
-  }
+  const displayUser = user || userService.getUserByUsernameSync('ayushmisra');
+
+  const avatarSrc = displayUser?.avatar
+    ? displayUser.avatar.trim().startsWith('/') || displayUser.avatar.trim().startsWith('http')
+      ? displayUser.avatar.trim()
+      : `/images/${displayUser.avatar.trim()}`
+    : '/images/honey.jpg';
 
   const tabs = [
-    { id: 'frames', label: 'Frames', count: content.frames.length, icon: Camera },
-    { id: 'thoughts', label: 'Thoughts', count: content.thoughts.length, icon: Quote },
-    { id: 'collections', label: 'Collections', count: content.collections.length, icon: Layers },
+    { id: 'frames', label: 'Frames', count: content?.frames?.length || 0, icon: Camera },
+    { id: 'thoughts', label: 'Thoughts', count: content?.thoughts?.length || 0, icon: Quote },
+    { id: 'collections', label: 'Collections', count: content?.collections?.length || 0, icon: Layers },
     { id: 'saved', label: 'Saved', count: savedFrames.length, icon: Bookmark },
   ];
 
@@ -86,8 +86,11 @@ export function ProfilePage() {
       {/* Cover Image Banner */}
       <div className="relative w-full h-56 sm:h-72 md:h-80 bg-bg overflow-hidden border-b border-line">
         <img
-          src={user.cover}
-          alt={user.name}
+          src={displayUser.cover || '/images/placeholder.jpg'}
+          alt={displayUser.name || 'Profile cover'}
+          onError={(e) => {
+            e.target.src = '/images/placeholder.jpg';
+          }}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-black/30" />
@@ -100,18 +103,21 @@ export function ProfilePage() {
           <div className="flex items-end gap-4 sm:gap-6">
             <div className="relative">
               <img
-                src={user.avatar}
-                alt={user.name}
+                src={avatarSrc}
+                alt={displayUser.name || 'Ayush Misra'}
+                onError={(e) => {
+                  e.target.src = '/images/honey.jpg';
+                }}
                 className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl object-cover border-4 border-surface shadow-warm-lg bg-surface"
               />
             </div>
 
             <div className="space-y-1 mb-1">
               <h1 className="font-serif text-2xl sm:text-3xl font-medium text-ink">
-                {user.name}
+                {displayUser.name}
               </h1>
-              <p className="text-xs text-muted font-mono">@{user.username}</p>
-              <p className="text-2xs text-accent font-medium">{user.role}</p>
+              <p className="text-xs text-muted font-mono">@{displayUser.username}</p>
+              <p className="text-2xs text-accent font-medium">{displayUser.role}</p>
             </div>
           </div>
 
@@ -126,7 +132,7 @@ export function ProfilePage() {
               <Share2 className="w-4 h-4" />
             </button>
 
-            {user.isPhotographerOwner && (
+            {displayUser.isPhotographerOwner && (
               <Link to="/photographer">
                 <Button variant="secondary" size="md">
                   Photographer Story
@@ -149,30 +155,30 @@ export function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-4 border-t border-line">
           <div className="md:col-span-8 space-y-3">
             <p className="text-xs sm:text-sm text-ink/90 leading-relaxed max-w-2xl font-sans">
-              {user.bio}
+              {displayUser.bio}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 text-2xs text-muted">
-              {user.location && (
+              {displayUser.location && (
                 <span className="inline-flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-accent" />
-                  {user.location}
+                  {displayUser.location}
                 </span>
               )}
-              {user.website && (
+              {displayUser.website && (
                 <a
-                  href={user.website}
+                  href={displayUser.website}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 hover:text-accent"
                 >
                   <Globe className="w-3.5 h-3.5" />
-                  {user.website.replace('https://', '')}
+                  {displayUser.website.replace('https://', '')}
                 </a>
               )}
-              {user.gearSummary && (
+              {displayUser.gearSummary && (
                 <span className="text-muted/80">
-                  {user.gearSummary}
+                  {displayUser.gearSummary}
                 </span>
               )}
             </div>
@@ -182,7 +188,7 @@ export function ProfilePage() {
           <div className="md:col-span-4 flex items-center justify-around sm:justify-end gap-6 sm:gap-8 bg-surface p-4 rounded-2xl border border-line shadow-warm-sm">
             <div className="text-center">
               <span className="font-serif text-lg sm:text-xl font-medium text-ink block">
-                {content.frames.length}
+                {content?.frames?.length || 0}
               </span>
               <span className="text-[11px] uppercase tracking-wider text-muted font-mono">
                 Frames
@@ -200,7 +206,7 @@ export function ProfilePage() {
             <div className="h-8 w-px bg-line" />
             <div className="text-center">
               <span className="font-serif text-lg sm:text-xl font-medium text-ink block">
-                {user.following}
+                {displayUser.following || 0}
               </span>
               <span className="text-[11px] uppercase tracking-wider text-muted font-mono">
                 Following
@@ -237,7 +243,7 @@ export function ProfilePage() {
         <div>
           {activeTab === 'frames' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {content.frames.map((f) => (
+              {(content?.frames || []).map((f) => (
                 <FrameCard
                   key={f.id}
                   frame={f}
@@ -249,7 +255,7 @@ export function ProfilePage() {
 
           {activeTab === 'thoughts' && (
             <div className="masonry-grid">
-              {content.thoughts.map((t) => (
+              {(content?.thoughts || []).map((t) => (
                 <div key={t.id} className="masonry-item">
                   <ThoughtCard thought={t} />
                 </div>
@@ -259,7 +265,7 @@ export function ProfilePage() {
 
           {activeTab === 'collections' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {content.collections.map((col) => (
+              {(content?.collections || []).map((col) => (
                 <CollectionCard key={col.id} collection={col} />
               ))}
             </div>
@@ -299,4 +305,3 @@ export function ProfilePage() {
     </div>
   );
 }
-

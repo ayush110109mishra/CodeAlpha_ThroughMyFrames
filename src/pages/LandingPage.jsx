@@ -247,8 +247,11 @@ export function LandingPage() {
             <div className="md:col-span-5 relative">
               <div className="relative aspect-[3/4] max-w-sm mx-auto rounded-2xl overflow-hidden shadow-warm-md border border-line">
                 <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85"
-                  alt="Ayush Mishra"
+                  src="/images/honey.jpg"
+                  alt="Ayush Misra"
+                  onError={(e) => {
+                    e.target.src = '/images/placeholder.jpg';
+                  }}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -259,7 +262,7 @@ export function LandingPage() {
                 Behind the Viewfinder
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-ink font-medium leading-tight">
-                Ayush Mishra
+                Ayush Misra
               </h2>
               <p className="font-handwritten text-xl sm:text-2xl text-accent">
                 "Photography is fundamentally an act of quiet reverence."
@@ -274,7 +277,7 @@ export function LandingPage() {
                     Read Personal Story & Gear
                   </Button>
                 </Link>
-                <Link to="/u/ayushmishra">
+                <Link to="/u/ayushmisra">
                   <Button variant="secondary" size="md">
                     View Profile
                   </Button>
