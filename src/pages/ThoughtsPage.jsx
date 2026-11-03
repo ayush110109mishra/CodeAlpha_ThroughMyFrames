@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { thoughtService } from '../services/thoughtService';
 import { ThoughtCard } from '../components/cards/ThoughtCard';
 import { MoodChip } from '../components/ui/MoodChip';
@@ -6,10 +7,10 @@ import { Button } from '../components/ui/Button';
 import { MOODS } from '../lib/constants';
 import { useToast } from '../components/ui/Toast';
 import { Quote, Plus, X, Sparkles, Feather } from 'lucide-react';
+import { EmptyState } from '../components/ui/EmptyState';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ThoughtsPage() {
-  const [thoughts, setThoughts] = useState([]);
   const [selectedMood, setSelectedMood] = useState('All');
   const [modalOpen, setModalOpen] = useState(false);
   const [newText, setNewText] = useState('');
@@ -17,14 +18,16 @@ export function ThoughtsPage() {
   const [newTags, setNewTags] = useState('Meditation, Slow Living');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    async function loadThoughts() {
-      const data = await thoughtService.getThoughts({ mood: selectedMood });
-      setThoughts(data);
-    }
-    loadThoughts();
-  }, [selectedMood]);
+  // TanStack Query for caching and asynchronous fetch lifecycle
+  const {
+    data: thoughts = [],
+    isLoading,
+  } = useQuery({
+    queryKey: ['thoughts', selectedMood],
+    queryFn: () => thoughtService.getThoughts({ mood: selectedMood }),
+  });
 
   const handleCreateThought = async (e) => {
     e.preventDefault();
@@ -36,13 +39,13 @@ export function ThoughtsPage() {
       .map((t) => t.trim().replace(/^#/, ''))
       .filter(Boolean);
 
-    const created = await thoughtService.createThought({
+    await thoughtService.createThought({
       text: newText.trim(),
       mood: newMood,
       tags: tagsArray,
     });
 
-    setThoughts((prev) => [created, ...prev]);
+    queryClient.invalidateQueries({ queryKey: ['thoughts'] });
     setIsSubmitting(false);
     setModalOpen(false);
     setNewText('');
@@ -91,14 +94,30 @@ export function ThoughtsPage() {
         ))}
       </div>
 
-      {/* Masonry Layout for Text Cards */}
-      <div className="masonry-grid">
-        {thoughts.map((thought) => (
-          <div key={thought.id} className="masonry-item">
-            <ThoughtCard thought={thought} />
-          </div>
-        ))}
-      </div>
+      {/* Masonry Layout for Text Cards or Empty / Loading State */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 py-6">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div key={n} className="h-44 rounded-2xl bg-surface/50 border border-line animate-pulse p-6" />
+          ))}
+        </div>
+      ) : thoughts.length === 0 ? (
+        <EmptyState
+          title="No reflections found"
+          description="Try selecting a different mood state or be the first to pen a reflection into the journal."
+          icon={Quote}
+          actionText="Write a Thought"
+          onAction={() => setModalOpen(true)}
+        />
+      ) : (
+        <div className="masonry-grid">
+          {thoughts.map((thought) => (
+            <div key={thought.id || thought._id} className="masonry-item">
+              <ThoughtCard thought={thought} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* "Write a Thought" Modal */}
       <AnimatePresence>

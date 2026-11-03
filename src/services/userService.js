@@ -1,8 +1,17 @@
+import { apiClient } from './api';
 import { users } from '../data/users';
 import { frames } from '../data/frames';
 import { thoughts } from '../data/thoughts';
 import { collections } from '../data/collections';
 import { storage } from '../lib/utils';
+
+/**
+ * ==============================================================================
+ * User Service (Frontend API Layer)
+ * ==============================================================================
+ * Connects to `/api/users/:username` with support for instant synchronous hydration
+ * and graceful fallback.
+ */
 
 const FOLLOWING_KEY = 'user_following';
 
@@ -15,7 +24,6 @@ function matchesUsername(authorUsername, targetUsername) {
   const a = normalize(authorUsername);
   const t = normalize(targetUsername);
   if (a === t) return true;
-  // Handle Ayush Misra / Mishra equivalence
   if ((a === 'ayushmisra' || a === 'ayushmishra') && (t === 'ayushmisra' || t === 'ayushmishra')) {
     return true;
   }
@@ -44,7 +52,18 @@ export const userService = {
   },
 
   async getUserByUsername(username) {
-    return this.getUserByUsernameSync(username);
+    try {
+      const response = await apiClient.get(`/users/${username}`);
+      const payload = response.data || response;
+      const user = payload.user || payload;
+      const followingList = storage.get(FOLLOWING_KEY, []);
+      return {
+        ...user,
+        isFollowing: followingList.includes(user.username),
+      };
+    } catch {
+      return this.getUserByUsernameSync(username);
+    }
   },
 
   async getCurrentUser() {
@@ -62,6 +81,13 @@ export const userService = {
       updated = [...followingList, user.username];
     }
     storage.set(FOLLOWING_KEY, updated);
+
+    try {
+      await apiClient.post(`/users/${username}/follow`);
+    } catch {
+      // Non-blocking
+    }
+
     return { isFollowing: !isFollowing };
   },
 
@@ -78,6 +104,16 @@ export const userService = {
   },
 
   async getUserContent(username) {
-    return this.getUserContentSync(username);
+    try {
+      const response = await apiClient.get(`/users/${username}`);
+      const payload = response.data || response;
+      return {
+        frames: payload.frames || [],
+        thoughts: payload.thoughts || [],
+        collections: payload.collections || [],
+      };
+    } catch {
+      return this.getUserContentSync(username);
+    }
   },
 };

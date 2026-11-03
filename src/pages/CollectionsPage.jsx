@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { collectionService } from '../services/collectionService';
 import { CollectionCard } from '../components/cards/CollectionCard';
 import { Layers, Sparkles } from 'lucide-react';
 
 export function CollectionsPage() {
-  const [collections, setCollections] = useState([]);
-
-  useEffect(() => {
-    async function loadCollections() {
-      const data = await collectionService.getCollections();
-      setCollections(data);
-    }
-    loadCollections()
-  }, []);
+  const {
+    data: collections = [],
+    isLoading,
+  } = useQuery({
+    queryKey: ['collections'],
+    queryFn: () => collectionService.getCollections(),
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 w-full space-y-12">
@@ -32,7 +31,7 @@ export function CollectionsPage() {
       {/* Collections Grid with Stack Hover Effect */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
         {collections.map((col) => (
-          <CollectionCard key={col.id} collection={col} />
+          <CollectionCard key={col.id || col._id} collection={col} />
         ))}
       </div>
     </div>

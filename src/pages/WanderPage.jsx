@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { tripService } from '../services/tripService';
 import { TripCard } from '../components/cards/TripCard';
 import { MapPin, Compass, Calendar, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 export function WanderPage() {
-  const [trips, setTrips] = useState([]);
-  const [selectedTrip, setSelectedTrip] = useState(null);
+  const [selectedTripId, setSelectedTripId] = useState(null);
 
-  useEffect(() => {
-    async function loadTrips() {
-      const data = await tripService.getTrips();
-      setTrips(data);
-      if (data.length > 0) {
-        setSelectedTrip(data[0]);
-      }
-    }
-    loadTrips();
-  }, []);
+  const {
+    data: trips = [],
+    isLoading,
+  } = useQuery({
+    queryKey: ['trips'],
+    queryFn: () => tripService.getTrips(),
+  });
+
+  const selectedTrip = trips.find((t) => (t.id || t._id) === selectedTripId) || trips[0] || null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 w-full space-y-16">
@@ -89,11 +88,13 @@ export function WanderPage() {
 
           {/* Interactive Trip Pins */}
           {trips.map((trip) => {
-            const isSelected = selectedTrip?.id === trip.id;
+            const tripId = trip.id || trip._id;
+            const currentSelectedId = selectedTrip?.id || selectedTrip?._id;
+            const isSelected = currentSelectedId === tripId;
             return (
               <button
-                key={trip.id}
-                onClick={() => setSelectedTrip(trip)}
+                key={tripId}
+                onClick={() => setSelectedTripId(tripId)}
                 className="absolute z-20 group transform -translate-x-1/2 -translate-y-1/2 focus:outline-none"
                 style={{
                   left: `${trip.coordinates?.x || 50}%`,

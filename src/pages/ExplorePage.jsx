@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { FilterBar } from '../components/ui/FilterBar';
 import { FrameCard } from '../components/cards/FrameCard';
 import { GalleryCanvas } from '../components/three/GalleryCanvas';
@@ -8,11 +9,9 @@ import { FrameCardSkeleton } from '../components/ui/SkeletonLoader';
 import { frameService } from '../services/frameService';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Camera } from 'lucide-react';
+import { Sparkles, Camera, AlertCircle } from 'lucide-react';
 
 export function ExplorePage() {
-  const [frames, setFrames] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedMood, setSelectedMood] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,20 +21,21 @@ export function ExplorePage() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchFrames() {
-      setIsLoading(true);
-      const data = await frameService.getFrames({
+  // TanStack Query for caching and asynchronous fetch lifecycle
+  const {
+    data: frames = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['frames', selectedMood, selectedCategory, searchQuery],
+    queryFn: () =>
+      frameService.getFrames({
         mood: selectedMood,
         category: selectedCategory,
         search: searchQuery,
-      });
-      setFrames(data);
-      setIsLoading(false);
-    }
-
-    fetchFrames();
-  }, [selectedMood, selectedCategory, searchQuery]);
+      }),
+  });
 
   const handleSurpriseMe = async () => {
     const random = await frameService.getRandomFrame();
