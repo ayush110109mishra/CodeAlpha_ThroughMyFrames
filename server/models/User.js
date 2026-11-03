@@ -31,7 +31,11 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'curator'],
+      default: 'user',
+    },
+    userType: {
+      type: String,
+      enum: ['user', 'admin'],
       default: 'user',
     },
     // PHASE 3 TODO: Add authentication password field here:
@@ -91,3 +95,4 @@ userSchema.set('toJSON', { virtuals: true });
 userSchema.set('toObject', { virtuals: true });
 
 export const User = mongoose.model('User', userSchema);
+

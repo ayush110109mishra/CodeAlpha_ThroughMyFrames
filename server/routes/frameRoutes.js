@@ -79,3 +79,4 @@ router
   .post(validate(addCommentValidation), addComment);
 
 export default router;
+

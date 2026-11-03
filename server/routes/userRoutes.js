@@ -7,3 +7,4 @@ router.get('/:username', getUserByUsername);
 router.post('/:username/follow', toggleFollow);
 
 export default router;
+

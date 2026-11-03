@@ -28,3 +28,4 @@ router
   .delete(deleteCollection);
 
 export default router;
+

@@ -30,3 +30,4 @@ export const sendError = (res, message = 'An error occurred', statusCode = 400, 
     ...(errors && { errors }),
   });
 };
+

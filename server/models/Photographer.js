@@ -95,3 +95,4 @@ const photographerSchema = new mongoose.Schema(
 );
 
 export const Photographer = mongoose.model('Photographer', photographerSchema);
+

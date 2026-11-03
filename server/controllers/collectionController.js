@@ -162,3 +162,4 @@ export const deleteCollection = async (req, res, next) => {
     next(error);
   }
 };
+

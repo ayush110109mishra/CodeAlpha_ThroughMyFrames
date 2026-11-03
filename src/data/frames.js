@@ -38,7 +38,7 @@ export const frames = [
       name: 'Ayush Misra',
       avatar: '/images/honey.jpg',
     },
-    createdAt: '2026-6-1 T07:12:00Z',
+    createdAt: '2026-06-01T07:12:00Z',
     aspectRatio: '16/9',
   },
   {
@@ -70,7 +70,7 @@ export const frames = [
       name: 'Ayush Misra',
       avatar: '/images/honey.jpg',
     },
-    createdAt: '2026-6-1 T07:12:00Z',
+    createdAt: '2026-06-01T07:12:00Z',
     aspectRatio: '3/4',
   },
   {
@@ -91,7 +91,7 @@ export const frames = [
       name: 'Ayush Misra',
       avatar: '/images/honey.jpg',
     },
-    createdAt: '2026-6-1 T07:12:00Z',
+    createdAt: '2026-06-01T07:12:00Z',
     aspectRatio: '4/3',
   },
   {
@@ -123,7 +123,7 @@ export const frames = [
       name: 'Ayush Misra',
       avatar: '/images/honey.jpg',
     },
-    createdAt: '2026-6-1 T07:12:00Z',
+    createdAt: '2026-06-01T07:12:00Z',
     aspectRatio: '3/4',
   },
   {
@@ -147,7 +147,7 @@ export const frames = [
           avatar: '/images/honey.jpg',
         },
         content: 'Intimate and dignified. Look at the mud textures on his palms.',
-        createdAt: '2026-6-1 T07:12:00Z',
+        createdAt: '2026-06-01T07:12:00Z',
       },
     ],
     author: {
@@ -155,7 +155,7 @@ export const frames = [
       name: 'Ayush Misra',
       avatar: '/images/honey.jpg',
     },
-    createdAt: '2026-6-1 T07:12:00Z',
+    createdAt: '2026-06-01T07:12:00Z',
     aspectRatio: '4/3',
   },
   {
@@ -176,7 +176,7 @@ export const frames = [
       name: 'Ayush Misra',
       avatar: '/images/honey.jpg',
     },
-    createdAt: '2026-6-1 T07:12:00Z',
+    createdAt: '2026-06-01T07:12:00Z',
     aspectRatio: '16/9',
   },
 ];

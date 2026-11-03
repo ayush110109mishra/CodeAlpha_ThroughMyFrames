@@ -72,3 +72,4 @@ export const submitContact = async (req, res, next) => {
     next(error);
   }
 };
+

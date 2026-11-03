@@ -106,3 +106,4 @@ frameSchema.set('toJSON', { virtuals: true });
 frameSchema.set('toObject', { virtuals: true });
 
 export const Frame = mongoose.model('Frame', frameSchema);
+

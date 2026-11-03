@@ -7,3 +7,4 @@ router.get('/', getTrips);
 router.get('/:id', getTripById);
 
 export default router;
+

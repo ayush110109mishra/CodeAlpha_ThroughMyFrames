@@ -61,3 +61,4 @@ thoughtSchema.set('toJSON', { virtuals: true });
 thoughtSchema.set('toObject', { virtuals: true });
 
 export const Thought = mongoose.model('Thought', thoughtSchema);
+

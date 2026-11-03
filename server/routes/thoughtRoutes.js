@@ -34,3 +34,4 @@ router
   .delete(deleteThought);
 
 export default router;
+

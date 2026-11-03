@@ -32,3 +32,4 @@ export const getHealth = async (req, res) => {
 
   return sendSuccess(res, status, 'Through My Frames 2.0 API is running smoothly');
 };
+

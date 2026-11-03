@@ -75,3 +75,4 @@ collectionSchema.set('toJSON', { virtuals: true });
 collectionSchema.set('toObject', { virtuals: true });
 
 export const Collection = mongoose.model('Collection', collectionSchema);
+

@@ -1,3 +1,6 @@
+
+import dns from 'dns';
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -81,6 +84,17 @@ const seedDatabase = async () => {
       return userMap.get(username.toLowerCase()) || createdUsers[0]._id;
     };
 
+    const safeDate = (dateVal) => {
+      if (!dateVal) return new Date();
+      if (typeof dateVal === 'string') {
+        const cleanStr = dateVal.replace(' T', 'T').trim();
+        const d = new Date(cleanStr);
+        if (!isNaN(d.getTime())) return d;
+      }
+      const fallback = new Date(dateVal);
+      return !isNaN(fallback.getTime()) ? fallback : new Date();
+    };
+
     // 3. Seed Frames and Comments
     console.log(`🖼️  Seeding Frames & Comments...`);
     const frameDocMap = new Map(); // slug/id -> Frame _id
@@ -100,7 +114,7 @@ const seedDatabase = async () => {
         likes: f.likes || 0,
         aspectRatio: f.aspectRatio || '16/9',
         author: authorId,
-        createdAt: f.createdAt ? new Date(f.createdAt) : new Date(),
+        createdAt: safeDate(f.createdAt),
       });
 
       frameDocMap.set(f.id, frameDoc._id);
@@ -113,7 +127,7 @@ const seedDatabase = async () => {
             frame: frameDoc._id,
             author: commentAuthorId,
             content: c.content,
-            createdAt: c.createdAt ? new Date(c.createdAt) : new Date(),
+            createdAt: safeDate(c.createdAt),
           });
           totalComments++;
         }
@@ -131,7 +145,7 @@ const seedDatabase = async () => {
       background: t.background,
       tags: t.tags || ['Reflections'],
       author: getUserId(t.author?.username),
-      createdAt: t.createdAt ? new Date(t.createdAt) : new Date(),
+      createdAt: safeDate(t.createdAt),
     }));
     const createdThoughts = await Thought.insertMany(thoughtsToInsert);
     console.log(`✓ Seeded ${createdThoughts.length} Thoughts`);
@@ -154,7 +168,7 @@ const seedDatabase = async () => {
         frames: resolvedFrameIds,
         count: col.frameIds?.length || 0,
         author: authorId,
-        curatedAt: col.curatedAt ? new Date(col.curatedAt) : new Date(),
+        curatedAt: safeDate(col.curatedAt),
       });
     }
     console.log(`✓ Seeded ${initialCollections.length} Collections`);
@@ -204,3 +218,4 @@ const seedDatabase = async () => {
 };
 
 seedDatabase();
+

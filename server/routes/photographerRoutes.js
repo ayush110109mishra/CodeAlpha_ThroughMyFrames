@@ -14,3 +14,4 @@ router.get('/', getPhotographer);
 router.post('/contact', validate(contactValidation), submitContact);
 
 export default router;
+

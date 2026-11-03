@@ -95,3 +95,4 @@ export const toggleFollow = async (req, res, next) => {
     next(error);
   }
 };
+

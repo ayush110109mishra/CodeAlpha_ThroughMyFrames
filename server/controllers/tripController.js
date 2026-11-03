@@ -70,3 +70,4 @@ export const getTripById = async (req, res, next) => {
     next(error);
   }
 };
+

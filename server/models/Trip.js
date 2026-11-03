@@ -81,3 +81,4 @@ tripSchema.set('toJSON', { virtuals: true });
 tripSchema.set('toObject', { virtuals: true });
 
 export const Trip = mongoose.model('Trip', tripSchema);
+

@@ -190,3 +190,4 @@ export const deleteThought = async (req, res, next) => {
     next(error);
   }
 };
+
