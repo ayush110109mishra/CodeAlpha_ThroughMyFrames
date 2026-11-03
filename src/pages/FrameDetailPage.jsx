@@ -164,8 +164,9 @@ export function FrameDetailPage() {
               src={frame.image}
               alt={frame.moment}
               onError={(e) => {
-                if (frame.fallbackImage && e.target.src !== frame.fallbackImage) {
-                  e.target.src = frame.fallbackImage;
+                const fallback = frame.fallbackImage || '/images/placeholder.jpg';
+                if (e.target.src !== fallback) {
+                  e.target.src = fallback;
                 }
               }}
               className="w-full h-auto max-h-[75vh] object-contain transition-transform duration-700 group-hover:scale-[1.01]"

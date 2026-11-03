@@ -84,7 +84,7 @@ export const photographerData = {
     },
   ],
 
-  favoriteFrameIds: ['taj-mahal', 'vrindavan', 'moon', 'varanasi-ghats', 'desert-solitude'],
+  favoriteFrameIds: ['taj-mahal', 'sunset', 'sky', 'honey', 'artisan-hands', 'desert-solitude'],
 
   currentExploration: {
     title: 'The Silent Ghats of Maheshwar & Narmada',

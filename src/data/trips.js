@@ -4,10 +4,10 @@ export const trips = [
     title: 'Echoes of Braj: Bells & River Mist',
     place: 'Vrindavan, Mathura & Gokul, India',
     dates: 'Oct 10 – Oct 18, 2024',
-    cover: '/images/vrindavan.jpg',
-    fallbackImage: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1600&q=85',
+    cover: '/images/taj-mahal.jpg',
+    fallbackImage: '/images/placeholder.jpg',
     story: 'We arrived in Vrindavan while night still wrapped the narrow gallis. Cows navigated ancient flagstones by instinct; distant mridanga chants echoed from courtyard temples. Over eight days, we walked with pilgrims from every corner of India. Between the explosion of color in the temples and the profound silence of the Yamuna ghats at midnight, this journey became a meditation on devotion and impermanence.',
-    frames: ['vrindavan', 'honey', 'taj-mahal'],
+    frames: ['taj-mahal', 'honey', 'sunset'],
     coordinates: { x: 58, y: 44 }, // Percentage on map canvas
     highlights: [
       'Mangala Aarti at 4:30 AM in Bankey Bihari',
@@ -20,10 +20,10 @@ export const trips = [
     title: 'The Eternal Current: Seven Nights in Varanasi',
     place: 'Varanasi, Uttar Pradesh, India',
     dates: 'Jul 22 – Jul 29, 2024',
-    cover: '/images/varanasi-ghats.jpg',
-    fallbackImage: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1600&q=85',
+    cover: '/images/sunset.jpg',
+    fallbackImage: '/images/placeholder.jpg',
     story: 'Mark Twain wrote that Varanasi is older than history, older than tradition, older even than legend. Sitting on the steps of Manikarnika Ghat at 3 AM watching the sacred pyres burn into gray ash, you understand that death is not feared here—it is merely a quiet release into the Ganga. We drifted downriver past 84 ghats, each with its own song and century of prayers.',
-    frames: ['varanasi-ghats', 'taj-mahal', 'artisan-hands'],
+    frames: ['sunset', 'taj-mahal', 'artisan-hands'],
     coordinates: { x: 68, y: 46 },
     highlights: [
       'Twilight boat drift during Maha Aarti',
@@ -36,10 +36,10 @@ export const trips = [
     title: 'Crown of Cold Fire: The High Passes of Ladakh',
     place: 'Leh, Nubra & Hanle, Ladakh, India',
     dates: 'Jun 10 – Jun 22, 2024',
-    cover: '/images/ladakh-night-sky.jpg',
-    fallbackImage: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1600&q=85',
+    cover: '/images/sky.jpg',
+    fallbackImage: '/images/placeholder.jpg',
     story: 'At 17,500 feet over Khardung La, air is scarce and thoughts turn crystal clear. We descended into the lunar landscapes of Nubra, where Bactrian camels roam sand dunes under snow peaks. At Hanle Dark Sky Reserve, darkness is not absence—it is a diamond-studded cathedral where the Milky Way casts actual shadows on the Himalayan earth.',
-    frames: ['ladakh-night-sky', 'himalayan-silence', 'sky'],
+    frames: ['sky', 'desert-solitude', 'honey'],
     coordinates: { x: 50, y: 22 },
     highlights: [
       'Astrophotography under Hanle’s Bortle Class 1 dark sky',
@@ -53,7 +53,7 @@ export const trips = [
     place: 'Jaisalmer & Thar Desert, Rajasthan, India',
     dates: 'Feb 28 – Mar 07, 2024',
     cover: '/images/desert-solitude.jpg',
-    fallbackImage: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1600&q=85',
+    fallbackImage: '/images/placeholder.jpg',
     story: 'The golden stone of Jaisalmer Fort rises like a mythical ship from the desert ocean. We slept under open skies in the Thar, waking up with fine silica sand settled gently over camera lenses. In the quiet solitude of the dunes, wind is the only architect, constantly wiping the slate clean and building new sculptures overnight.',
     frames: ['desert-solitude', 'sunset', 'artisan-hands'],
     coordinates: { x: 38, y: 42 },
@@ -64,4 +64,3 @@ export const trips = [
     ],
   },
 ];
-

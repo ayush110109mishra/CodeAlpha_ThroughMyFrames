@@ -65,7 +65,7 @@ export function UploadPage() {
       if (mode === 'photo') {
         const newFrame = await frameService.createFrame({
           image: imagePreview,
-          fallbackImage: imagePreview,
+          fallbackImage: '/images/placeholder.jpg',
           moment: data.moment,
           mood: selectedMood,
           category: data.category,

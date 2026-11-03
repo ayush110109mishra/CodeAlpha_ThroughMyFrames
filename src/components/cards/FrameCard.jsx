@@ -33,8 +33,9 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
   };
 
   const handleImageError = () => {
-    if (frame.fallbackImage && imgSrc !== frame.fallbackImage) {
-      setImgSrc(frame.fallbackImage);
+    const fallback = frame.fallbackImage || '/images/placeholder.jpg';
+    if (imgSrc !== fallback) {
+      setImgSrc(fallback);
     }
   };
 

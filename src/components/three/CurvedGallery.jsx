@@ -16,19 +16,18 @@ function CarouselItem({ frame, angle, radius, onSelect, isActive }) {
   const texture = useMemo(() => {
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin('anonymous');
+    const fallback = frame.fallbackImage || '/images/placeholder.jpg';
     const tex = loader.load(
       frame.image,
       undefined,
       undefined,
       () => {
-        if (frame.fallbackImage) {
-          loader.load(frame.fallbackImage, (fallbackTex) => {
-            if (meshRef.current) {
-              tex.image = fallbackTex.image;
-              tex.needsUpdate = true;
-            }
-          });
-        }
+        loader.load(fallback, (fallbackTex) => {
+          if (meshRef.current) {
+            tex.image = fallbackTex.image;
+            tex.needsUpdate = true;
+          }
+        });
       }
     );
     tex.colorSpace = THREE.SRGBColorSpace;

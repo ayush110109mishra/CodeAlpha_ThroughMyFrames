@@ -104,8 +104,9 @@ export function Lightbox({ isOpen, onClose, currentFrame, onPrev, onNext, total,
               src={currentFrame.image}
               alt={currentFrame.moment || 'Frame'}
               onError={(e) => {
-                if (currentFrame.fallbackImage && e.target.src !== currentFrame.fallbackImage) {
-                  e.target.src = currentFrame.fallbackImage;
+                const fallback = currentFrame.fallbackImage || '/images/placeholder.jpg';
+                if (e.target.src !== fallback) {
+                  e.target.src = fallback;
                 }
               }}
               className="max-h-[72vh] w-auto object-contain select-none"

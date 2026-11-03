@@ -84,8 +84,9 @@ export function MomentPage() {
                     src={currentMoment.image}
                     alt={currentMoment.moment}
                     onError={(e) => {
-                      if (currentMoment.fallbackImage && e.target.src !== currentMoment.fallbackImage) {
-                        e.target.src = currentMoment.fallbackImage;
+                      const fallback = currentMoment.fallbackImage || '/images/placeholder.jpg';
+                      if (e.target.src !== fallback) {
+                        e.target.src = fallback;
                       }
                     }}
                     className="w-full h-auto max-h-[55vh] object-contain"

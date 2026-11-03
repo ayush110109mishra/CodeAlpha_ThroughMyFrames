@@ -100,8 +100,9 @@ export function LandingPage() {
                   src={momentFrame.image}
                   alt={momentFrame.moment}
                   onError={(e) => {
-                    if (momentFrame.fallbackImage && e.target.src !== momentFrame.fallbackImage) {
-                      e.target.src = momentFrame.fallbackImage;
+                    const fallback = momentFrame.fallbackImage || '/images/placeholder.jpg';
+                    if (e.target.src !== fallback) {
+                      e.target.src = fallback;
                     }
                   }}
                   className="w-full h-full object-cover"

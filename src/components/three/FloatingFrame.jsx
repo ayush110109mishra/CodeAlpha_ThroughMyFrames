@@ -22,20 +22,19 @@ export function FloatingFrame({
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin('anonymous');
     
-    // Attempt loading primary image, fallback to high-res Unsplash if error
+    // Attempt loading primary image, fallback to placeholder if error
+    const fallback = fallbackUrl || '/images/placeholder.jpg';
     const tex = loader.load(
       imageUrl,
       undefined,
       undefined,
       () => {
-        if (fallbackUrl) {
-          loader.load(fallbackUrl, (fallbackTex) => {
-            if (meshRef.current) {
-              tex.image = fallbackTex.image;
-              tex.needsUpdate = true;
-            }
-          });
-        }
+        loader.load(fallback, (fallbackTex) => {
+          if (meshRef.current) {
+            tex.image = fallbackTex.image;
+            tex.needsUpdate = true;
+          }
+        });
       }
     );
     tex.colorSpace = THREE.SRGBColorSpace;

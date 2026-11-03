@@ -24,8 +24,9 @@ export function CollectionCard({ collection }) {
               src={imgSrc}
               alt={collection.title}
               onError={() => {
-                if (collection.fallbackImage && imgSrc !== collection.fallbackImage) {
-                  setImgSrc(collection.fallbackImage);
+                const fallback = collection.fallbackImage || '/images/placeholder.jpg';
+                if (imgSrc !== fallback) {
+                  setImgSrc(fallback);
                 }
               }}
               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"

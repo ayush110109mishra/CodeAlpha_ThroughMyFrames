@@ -49,8 +49,9 @@ export function FallbackHero({ featuredFrames = [] }) {
                   src={frame.image}
                   alt={frame.moment}
                   onError={(e) => {
-                    if (frame.fallbackImage && e.target.src !== frame.fallbackImage) {
-                      e.target.src = frame.fallbackImage;
+                    const fallback = frame.fallbackImage || '/images/placeholder.jpg';
+                    if (e.target.src !== fallback) {
+                      e.target.src = fallback;
                     }
                   }}
                   className="w-full h-full object-cover"

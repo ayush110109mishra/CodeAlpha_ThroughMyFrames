@@ -13,8 +13,9 @@ export function TripCard({ trip, onSelectTrip }) {
           src={imgSrc}
           alt={trip.title}
           onError={() => {
-            if (trip.fallbackImage && imgSrc !== trip.fallbackImage) {
-              setImgSrc(trip.fallbackImage);
+            const fallback = trip.fallbackImage || '/images/placeholder.jpg';
+            if (imgSrc !== fallback) {
+              setImgSrc(fallback);
             }
           }}
           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
