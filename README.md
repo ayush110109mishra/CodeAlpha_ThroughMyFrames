@@ -235,7 +235,8 @@ JWT_EXPIRES_IN=7d
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-SEED_OWNER_PASSWORD=Ayush@ThroughMyFrames2026
+SEED_OWNER_PASSWORD=your_secure_owner_password_here
+ALLOW_SIGNUP=true
 ```
 
 ---
@@ -289,7 +290,7 @@ All accounts below are initialized during `npm run seed`:
 
 | Username | Email | Password | Role |
 | :--- | :--- | :--- | :--- |
-| `ayushmishra` | `ayush@throughmyframes.com` | Defined via `SEED_OWNER_PASSWORD` | Admin / Creator |
+| `ayushmishra` | `honeymishra711@gmail.com` | Defined via `SEED_OWNER_PASSWORD` | Admin / Creator |
 | `amanmishra` | `aman@example.com` | `Demo@12345` | Explorer / User |
 | `priyasharma`| `priya@example.com` | `Demo@12345` | Photographer / User |
 | `mirapatel` | `mira@example.com` | `Demo@12345` | Writer / User |

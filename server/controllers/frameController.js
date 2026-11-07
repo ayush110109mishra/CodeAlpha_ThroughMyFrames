@@ -385,7 +385,7 @@ export const toggleLike = async (req, res, next) => {
 
     return sendSuccess(
       res,
-      { liked, likesCount: frame.likes },
+      { liked, isLiked: liked, likesCount: frame.likes },
       liked ? 'Frame liked' : 'Frame unliked'
     );
   } catch (error) {
@@ -421,7 +421,7 @@ export const toggleSave = async (req, res, next) => {
 
     return sendSuccess(
       res,
-      { saved },
+      { saved, isSaved: saved },
       saved ? 'Frame saved to your personal collection' : 'Frame removed from saved collection'
     );
   } catch (error) {

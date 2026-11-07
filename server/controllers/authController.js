@@ -26,6 +26,11 @@ import { sendSuccess, sendError } from '../utils/apiResponse.js';
  */
 export const signup = async (req, res, next) => {
   try {
+    // Check if new registrations are permitted via ALLOW_SIGNUP flag (default true)
+    if (process.env.ALLOW_SIGNUP === 'false') {
+      return sendError(res, 'Signups are closed', 403);
+    }
+
     // SECURITY: Users can NEVER assign their own role. Prevent privilege escalation.
     delete req.body.role;
 

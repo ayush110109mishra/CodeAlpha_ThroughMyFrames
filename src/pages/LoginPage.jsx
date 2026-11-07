@@ -29,6 +29,9 @@ export function LoginPage() {
   const redirectTarget =
     location.state?.from?.pathname || searchParams.get('redirect') || null;
 
+  const allowSignup =
+    (import.meta.env.VITE_ALLOW_SIGNUP || import.meta.env.ALLOW_SIGNUP || 'true') !== 'false';
+
   const {
     register,
     handleSubmit,
@@ -149,15 +152,17 @@ export function LoginPage() {
             <p><span className="font-mono text-accent">ayushmishra</span> (owner) or <span className="font-mono text-accent">aman</span> / <span className="font-mono text-accent">Demo@12345</span></p>
           </div>
 
-          <p className="text-xs text-center text-muted pt-2">
-            Don't have an account yet?{' '}
-            <Link
-              to={redirectTarget ? `/signup?redirect=${encodeURIComponent(redirectTarget)}` : '/signup'}
-              className="text-accent font-medium hover:underline"
-            >
-              Join the journal
-            </Link>
-          </p>
+          {allowSignup && (
+            <p className="text-xs text-center text-muted pt-2">
+              Don't have an account yet?{' '}
+              <Link
+                to={redirectTarget ? `/signup?redirect=${encodeURIComponent(redirectTarget)}` : '/signup'}
+                className="text-accent font-medium hover:underline"
+              >
+                Join the journal
+              </Link>
+            </p>
+          )}
         </div>
 
         <div className="text-2xs text-muted pt-6">

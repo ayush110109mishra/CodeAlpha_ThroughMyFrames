@@ -107,7 +107,7 @@ const seedDatabase = async () => {
       const isOwner = u.username.toLowerCase() === 'ayushmishra';
       return {
         ...u,
-        email: isOwner ? 'ayush@throughmyframes.art' : `${u.username.toLowerCase()}@throughmyframes.art`,
+        email: isOwner ? 'honeymishra711@gmail.com' : `${u.username.toLowerCase()}@throughmyframes.art`,
         passwordHash: isOwner ? ownerPasswordHash : demoPasswordHash,
         role: isOwner ? 'admin' : 'user',
         headline: u.role || 'Wanderer',

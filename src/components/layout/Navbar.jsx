@@ -30,6 +30,9 @@ export function Navbar() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
+  const allowSignup =
+    (import.meta.env.VITE_ALLOW_SIGNUP || import.meta.env.ALLOW_SIGNUP || 'true') !== 'false';
+
   // Dark/Light theme toggle
   const [isDark, setIsDark] = useState(() => {
     return (
@@ -224,11 +227,13 @@ export function Navbar() {
                     Log in
                   </Button>
                 </Link>
-                <Link to="/signup">
-                  <Button variant="outline" size="sm" icon={UserPlus}>
-                    Sign up
-                  </Button>
-                </Link>
+                {allowSignup && (
+                  <Link to="/signup">
+                    <Button variant="outline" size="sm" icon={UserPlus}>
+                      Sign up
+                    </Button>
+                  </Link>
+                )}
               </div>
             )}
 
@@ -335,13 +340,15 @@ export function Navbar() {
                       >
                         Log in
                       </Link>
-                      <Link
-                        to="/signup"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="w-full text-center py-2.5 rounded-pill bg-accent text-white text-xs font-medium hover:bg-accent/90"
-                      >
-                        Sign up
-                      </Link>
+                      {allowSignup && (
+                        <Link
+                          to="/signup"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="w-full text-center py-2.5 rounded-pill bg-accent text-white text-xs font-medium hover:bg-accent/90"
+                        >
+                          Sign up
+                        </Link>
+                      )}
                     </div>
                   )}
                 </div>

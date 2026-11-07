@@ -93,6 +93,7 @@ This production guide walks through deploying **Through My Frames 2.0** to cloud
    | `CLOUDINARY_API_KEY` | `your_api_key` | From Step 2 |
    | `CLOUDINARY_API_SECRET` | `your_api_secret` | From Step 2 |
    | `SEED_OWNER_PASSWORD` | `SecurePassword123!` | Password for `@ayushmishra` |
+   | `ALLOW_SIGNUP` | `true` | Set to `false` if public registrations should be closed |
 
 7. Click **Create Web Service**.
 8. Once deployed, note down your live Render URL (e.g., `https://through-my-frames-api.onrender.com`).

@@ -34,6 +34,9 @@ export function SignupPage() {
   const redirectTarget =
     location.state?.from?.pathname || searchParams.get('redirect') || null;
 
+  const allowSignup =
+    (import.meta.env.VITE_ALLOW_SIGNUP || import.meta.env.ALLOW_SIGNUP || 'true') !== 'false';
+
   const {
     register,
     handleSubmit,
@@ -111,7 +114,26 @@ export function SignupPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {!allowSignup ? (
+            <div className="p-6 rounded-2xl bg-surface border border-line text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center mx-auto">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-lg font-medium text-ink">Signups are closed</h3>
+                <p className="text-xs text-muted">
+                  New wanderer registrations are currently paused. Please sign in with an existing account.
+                </p>
+              </div>
+              <Link to="/login" className="inline-block">
+                <Button variant="primary" size="md">
+                  Go to Sign In
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Full Name */}
             <div className="space-y-1">
               <label className="text-2xs font-mono uppercase tracking-wider text-muted block font-semibold">
@@ -204,15 +226,17 @@ export function SignupPage() {
             </Button>
           </form>
 
-          <p className="text-xs text-center text-muted pt-2">
-            Already have an account?{' '}
-            <Link
-              to={redirectTarget ? `/login?redirect=${encodeURIComponent(redirectTarget)}` : '/login'}
-              className="text-accent font-medium hover:underline"
-            >
-              Sign in
-            </Link>
-          </p>
+              <p className="text-xs text-center text-muted pt-2">
+                Already have an account?{' '}
+                <Link
+                  to={redirectTarget ? `/login?redirect=${encodeURIComponent(redirectTarget)}` : '/login'}
+                  className="text-accent font-medium hover:underline"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </>
+          )}
         </div>
 
         <div className="text-2xs text-muted pt-6">
