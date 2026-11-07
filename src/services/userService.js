@@ -7,27 +7,17 @@ import { storage } from '../lib/utils';
 
 /**
  * ==============================================================================
- * User Service (Frontend API Layer)
+ * User Service (Frontend API Layer - Phase 3)
  * ==============================================================================
- * Connects to `/api/users/:username` with support for instant synchronous hydration
- * and graceful fallback.
+ * Connects to `/api/users/:username`, `/api/users/me`, and `/api/users/:username/follow`.
+ * Real API mode is active by default. Mock fallback is ONLY used if VITE_USE_MOCK=true.
  */
 
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const FOLLOWING_KEY = 'user_following';
 
 function normalize(str) {
   return (str || '').toLowerCase().replace(/[-_\s]/g, '');
-}
-
-function matchesUsername(authorUsername, targetUsername) {
-  if (!authorUsername || !targetUsername) return false;
-  const a = normalize(authorUsername);
-  const t = normalize(targetUsername);
-  if (a === t) return true;
-  if ((a === 'ayushmisra' || a === 'ayushmishra') && (t === 'ayushmisra' || t === 'ayushmishra')) {
-    return true;
-  }
-  return false;
 }
 
 function findUser(username) {
@@ -35,7 +25,7 @@ function findUser(username) {
   const t = normalize(username);
   const found = users.find((u) => {
     const uNorm = normalize(u.username);
-    return uNorm === t || matchesUsername(u.username, username);
+    return uNorm === t || (uNorm === 'ayushmishra' && t === 'ayushmishra');
   });
   return found || users[0];
 }
@@ -55,51 +45,52 @@ export const userService = {
     try {
       const response = await apiClient.get(`/users/${username}`);
       const payload = response.data || response;
-      const user = payload.user || payload;
-      const followingList = storage.get(FOLLOWING_KEY, []);
-      return {
-        ...user,
-        isFollowing: followingList.includes(user.username),
-      };
-    } catch {
+      return payload.user || payload;
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return this.getUserByUsernameSync(username);
     }
   },
 
-  async getCurrentUser() {
-    return users[0]; // Ayush Misra
+  async toggleFollow(username) {
+    try {
+      const response = await apiClient.post(`/users/${username}/follow`);
+      return response.data || response;
+    } catch (err) {
+      if (!USE_MOCK) throw err;
+
+      const user = findUser(username);
+      const followingList = storage.get(FOLLOWING_KEY, []);
+      const isFollowing = followingList.includes(user.username);
+      const updated = isFollowing
+        ? followingList.filter((u) => u !== user.username)
+        : [...followingList, user.username];
+      storage.set(FOLLOWING_KEY, updated);
+      return { isFollowing: !isFollowing };
+    }
   },
 
-  async toggleFollow(username) {
-    const user = findUser(username);
-    const followingList = storage.get(FOLLOWING_KEY, []);
-    const isFollowing = followingList.includes(user.username);
-    let updated;
-    if (isFollowing) {
-      updated = followingList.filter((u) => u !== user.username);
-    } else {
-      updated = [...followingList, user.username];
-    }
-    storage.set(FOLLOWING_KEY, updated);
+  async updateProfile(profileData) {
+    const response = await apiClient.put('/users/me', profileData);
+    return response.data || response;
+  },
 
-    try {
-      await apiClient.post(`/users/${username}/follow`);
-    } catch {
-      // Non-blocking
-    }
-
-    return { isFollowing: !isFollowing };
+  async getMySavedFrames() {
+    const response = await apiClient.get('/users/me/saved');
+    return response.data || response;
   },
 
   getUserContentSync(username) {
-    const userFrames = frames.filter((f) => matchesUsername(f.author?.username, username));
-    const userThoughts = thoughts.filter((t) => matchesUsername(t.author?.username, username));
-    const userCollections = collections.filter((c) => matchesUsername(c.author?.username, username));
+    const target = normalize(username);
+    const userFrames = frames.filter((f) => normalize(f.author?.username) === target);
+    const userThoughts = thoughts.filter((t) => normalize(t.author?.username) === target);
+    const userCollections = collections.filter((c) => normalize(c.author?.username) === target);
 
     return {
       frames: userFrames,
       thoughts: userThoughts,
       collections: userCollections,
+      saved: [],
     };
   },
 
@@ -111,8 +102,10 @@ export const userService = {
         frames: payload.frames || [],
         thoughts: payload.thoughts || [],
         collections: payload.collections || [],
+        saved: payload.saved || [],
       };
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return this.getUserContentSync(username);
     }
   },

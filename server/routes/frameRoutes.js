@@ -8,24 +8,25 @@ import {
   updateFrame,
   deleteFrame,
   toggleLike,
+  toggleSave,
   getComments,
   addComment,
 } from '../controllers/frameController.js';
+import { protect, optionalAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
+import { commentLimiter } from '../middleware/rateLimiter.js';
 
 /**
  * ==============================================================================
- * Frame Routes
+ * Frame Routes (Phase 3: Protected Routes & Interactions)
  * ==============================================================================
- * WHY ROUTES EXIST:
- * Routes define the API contract: which URLs and HTTP verbs map to which controllers.
- * Adding validation middleware directly to routes ensures malformed data is rejected
- * before hitting controller logic.
+ * Maps HTTP verbs to controllers.
+ * - Writes (POST, PUT, DELETE) require valid JWT authentication via `protect`.
+ * - Public reads use `optionalAuth` to personalize like/save states when logged in.
  */
 
 const router = express.Router();
 
-// Validation rules for creating a frame
 const createFrameValidation = [
   body('image').notEmpty().withMessage('Photo image path or URL is required'),
   body('moment')
@@ -44,39 +45,39 @@ const createFrameValidation = [
     .withMessage('Invalid category selection'),
 ];
 
-// Validation for adding a comment
 const addCommentValidation = [
   body('content')
+    .trim()
     .notEmpty()
     .withMessage('Comment cannot be empty')
     .isLength({ max: 500 })
     .withMessage('Comment cannot exceed 500 characters'),
 ];
 
-// 1. Random Frame route (must be placed BEFORE /:id so 'random' is not interpreted as an ID)
+// 1. Random Frame route (placed before /:id)
 router.get('/random', getRandomFrame);
 
 // 2. Collection root routes
 router
   .route('/')
-  .get(getFrames)
-  .post(validate(createFrameValidation), createFrame);
+  .get(optionalAuth, getFrames)
+  .post(protect, validate(createFrameValidation), createFrame);
 
 // 3. Frame by ID or slug routes
 router
   .route('/:id')
-  .get(getFrameById)
-  .put(updateFrame)
-  .delete(deleteFrame);
+  .get(optionalAuth, getFrameById)
+  .put(protect, updateFrame)
+  .delete(protect, deleteFrame);
 
-// 4. Like toggle route
-router.post('/:id/like', toggleLike);
+// 4. Social interaction toggles
+router.post('/:id/like', protect, toggleLike);
+router.post('/:id/save', protect, toggleSave);
 
-// 5. Nested comments routes for this frame
+// 5. Nested comments routes
 router
   .route('/:id/comments')
   .get(getComments)
-  .post(validate(addCommentValidation), addComment);
+  .post(protect, commentLimiter, validate(addCommentValidation), addComment);
 
 export default router;
-

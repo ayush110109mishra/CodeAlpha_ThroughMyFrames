@@ -4,11 +4,12 @@ import { storage } from '../lib/utils';
 
 /**
  * ==============================================================================
- * Thought Service (Frontend API Layer)
+ * Thought Service (Frontend API Layer - Phase 3)
  * ==============================================================================
- * Connects to `/api/thoughts` with resilient offline fallback.
+ * Connects to `/api/thoughts`. Mock fallback ONLY when VITE_USE_MOCK=true.
  */
 
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const STORAGE_KEY = 'custom_thoughts';
 
 function getLocalThoughts() {
@@ -30,6 +31,8 @@ export const thoughtService = {
       const response = await apiClient.get('/thoughts', { params });
       return response.data || response;
     } catch (err) {
+      if (!USE_MOCK) throw err;
+
       let list = getLocalThoughts();
       if (mood && mood !== 'All') {
         list = list.filter((t) => t.mood?.toLowerCase() === mood.toLowerCase());
@@ -57,24 +60,23 @@ export const thoughtService = {
     try {
       const response = await apiClient.get(`/thoughts/${id}`);
       return response.data || response;
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       const list = getLocalThoughts();
       return list.find((t) => t.id === id || t._id === id) || null;
     }
   },
 
   /**
-   * Get a random thought
+   * Get random thought for reflection widget
    */
-  async getRandomThought(excludeId) {
+  async getRandomThought() {
     try {
-      const response = await apiClient.get('/thoughts/random', {
-        params: { excludeId },
-      });
+      const response = await apiClient.get('/thoughts/random');
       return response.data || response;
-    } catch {
-      const list = getLocalThoughts().filter((t) => t.id !== excludeId);
-      if (!list.length) return getLocalThoughts()[0];
+    } catch (err) {
+      if (!USE_MOCK) throw err;
+      const list = getLocalThoughts();
       const randomIndex = Math.floor(Math.random() * list.length);
       return list[randomIndex];
     }
@@ -83,40 +85,16 @@ export const thoughtService = {
   /**
    * Create a new thought
    */
-  async createThought({ text, mood, tags }) {
-    const gradients = [
-      'linear-gradient(135deg, rgba(194, 105, 62, 0.08) 0%, rgba(233, 201, 168, 0.18) 100%)',
-      'linear-gradient(135deg, rgba(80, 110, 140, 0.08) 0%, rgba(180, 200, 215, 0.15) 100%)',
-      'linear-gradient(135deg, rgba(120, 140, 120, 0.08) 0%, rgba(200, 215, 200, 0.16) 100%)',
-      'linear-gradient(135deg, rgba(160, 130, 100, 0.08) 0%, rgba(220, 205, 190, 0.18) 100%)',
-    ];
-    const bg = gradients[Math.floor(Math.random() * gradients.length)];
+  async createThought(data) {
+    const response = await apiClient.post('/thoughts', data);
+    return response.data || response;
+  },
 
-    try {
-      const response = await apiClient.post('/thoughts', {
-        text,
-        mood: mood || 'Calm',
-        tags: tags || ['Reflections'],
-        background: bg,
-      });
-      return response.data || response;
-    } catch (err) {
-      const newThought = {
-        id: `thought_${Date.now()}`,
-        text,
-        mood: mood || 'Calm',
-        tags: tags || ['Reflections'],
-        background: bg,
-        author: {
-          username: 'ayushmisra',
-          name: 'Ayush Misra',
-          avatar: '/images/honey.jpg',
-        },
-        createdAt: new Date().toISOString(),
-      };
-      const custom = storage.get(STORAGE_KEY, []);
-      storage.set(STORAGE_KEY, [newThought, ...custom]);
-      return newThought;
-    }
+  /**
+   * Delete a thought
+   */
+  async deleteThought(id) {
+    const response = await apiClient.delete(`/thoughts/${id}`);
+    return response.data || response;
   },
 };

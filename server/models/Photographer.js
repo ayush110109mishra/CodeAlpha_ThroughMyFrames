@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
  * Photographer (Site Content) Model
  * ==============================================================================
  * WHY THIS MODEL EXISTS:
- * Represents the intimate sanctuary content for the site creator (Ayush Misra)
+ * Represents the intimate sanctuary content for the site creator (Ayush Mishra)
  * rendered on `/photographer`. Storing this in MongoDB allows the photographer to
  * update artist statements, equipment lists, current university/exploration notes,
  * and timeline milestones dynamically without redeploying frontend code.
@@ -16,7 +16,7 @@ const photographerSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      default: 'Ayush Misra',
+      default: 'Ayush Mishra',
     },
     title: {
       type: String,
@@ -32,7 +32,7 @@ const photographerSchema = new mongoose.Schema(
     },
     portraitAlt: {
       type: String,
-      default: 'Ayush Misra',
+      default: 'Ayush Mishra',
     },
     location: {
       type: String,

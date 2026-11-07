@@ -19,6 +19,8 @@ import {
   Layers,
 } from 'lucide-react';
 
+import { MetaSEO } from '../components/seo/MetaSEO';
+
 export function PhotographerPage() {
   const [data, setData] = useState(() => photographerData);
   const [activeLightboxFrame, setActiveLightboxFrame] = useState(null);
@@ -52,17 +54,22 @@ export function PhotographerPage() {
     if (!contactEmail.trim() || !contactMessage.trim()) return;
 
     setIsSubmitting(true);
-    await photographerService.submitContact({
-      name: contactName,
-      email: contactEmail,
-      type: inquiryType,
-      message: contactMessage,
-    });
-    setIsSubmitting(false);
-    showToast('Your letter has reached Ayush. You will receive a response shortly.', 'success');
-    setContactName('');
-    setContactEmail('');
-    setContactMessage('');
+    try {
+      const res = await photographerService.submitContact({
+        name: contactName.trim(),
+        email: contactEmail.trim(),
+        type: inquiryType,
+        message: contactMessage.trim(),
+      });
+      showToast(res.message || 'Your letter has reached Ayush. You will receive a response shortly.', 'success');
+      setContactName('');
+      setContactEmail('');
+      setContactMessage('');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Could not send letter. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!data) {
@@ -81,13 +88,19 @@ export function PhotographerPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-24 w-full space-y-24">
+      <MetaSEO
+        title="The Photographer's Journal — Ayush Mishra"
+        description={data.statement || "Creator sanctuary, philosophy, field gear, and correspondence."}
+        path="/photographer"
+      />
+
       {/* 1. Hero Section: Intimate Portrait & Statement */}
       <section className="space-y-10">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 md:gap-12 pb-12 border-b border-line">
           <div className="w-48 h-60 sm:w-60 sm:h-72 md:w-72 md:h-84 shrink-0 rounded-3xl overflow-hidden border border-line shadow-warm-lg bg-surface relative">
             <img
               src={portraitSrc}
-              alt={data.name || 'Ayush Misra'}
+              alt={data.name || 'Ayush Mishra'}
               onError={(e) => {
                 e.target.src = '/images/placeholder.jpg';
               }}

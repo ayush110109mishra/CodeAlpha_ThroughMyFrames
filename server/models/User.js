@@ -2,14 +2,18 @@ import mongoose from 'mongoose';
 
 /**
  * ==============================================================================
- * User Model
+ * User Model (Phase 3: Auth & Social Ready)
  * ==============================================================================
  * WHY THIS MODEL EXISTS:
  * Represents any person in the Through My Frames journal ecosystem—both
- * community members and the primary photographer (Ayush Misra).
+ * community members and the primary photographer (Ayush Mishra).
  *
- * Mongoose Schemas map directly to MongoDB documents and enforce validation,
- * default values, and relationships (like referencing users in frames & comments).
+ * Security Considerations:
+ * 1. `passwordHash` is explicitly configured with `select: false` so that standard
+ *    `User.find()` or `User.findById()` queries never leak the hashed password.
+ * 2. `email` is strictly unique and lowercase to prevent account collision attacks.
+ * 3. `toJSON` transform explicitly strips `passwordHash` as defense-in-depth.
+ * 4. `role` is strictly constrained to 'user' or 'admin' for RBAC authorization.
  */
 
 const userSchema = new mongoose.Schema(
@@ -24,6 +28,20 @@ const userSchema = new mongoose.Schema(
       maxlength: [30, 'Username cannot exceed 30 characters'],
       index: true,
     },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      trim: true,
+      lowercase: true,
+      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
+      index: true,
+    },
+    passwordHash: {
+      type: String,
+      required: [true, 'Password hash is required'],
+      select: false, // Prevents hash from returning in queries by default
+    },
     name: {
       type: String,
       required: [true, 'Name is required'],
@@ -31,18 +49,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: 'user',
-    },
-    userType: {
-      type: String,
       enum: ['user', 'admin'],
       default: 'user',
     },
-    // PHASE 3 TODO: Add authentication password field here:
-    // password: {
-    //   type: String,
-    //   select: false, // Prevents password from being returned in API queries by default
-    // },
+    headline: {
+      type: String,
+      default: '',
+    },
     avatar: {
       type: String,
       default: '/images/honey.jpg',
@@ -82,7 +95,7 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manages createdAt and updatedAt
+    timestamps: true, // Manages createdAt and updatedAt automatically
   }
 );
 
@@ -91,8 +104,26 @@ userSchema.virtual('followersCount').get(function () {
   return this.followers;
 });
 
-userSchema.set('toJSON', { virtuals: true });
-userSchema.set('toObject', { virtuals: true });
+// Virtual for backward-compatible followingCount alias
+userSchema.virtual('followingCount').get(function () {
+  return this.following;
+});
+
+// Ensure passwordHash is never serialized into JSON
+userSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret.passwordHash;
+    return ret;
+  },
+});
+
+userSchema.set('toObject', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret.passwordHash;
+    return ret;
+  },
+});
 
 export const User = mongoose.model('User', userSchema);
-

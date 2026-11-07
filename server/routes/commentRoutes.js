@@ -1,16 +1,15 @@
 import express from 'express';
 import { deleteComment } from '../controllers/commentController.js';
+import { protect } from '../middleware/auth.js';
 
 /**
  * ==============================================================================
- * Comment Routes
+ * Comment Routes (Phase 3: Protected Moderation)
  * ==============================================================================
- * Provides endpoints for standalone comment moderation and deletion.
  */
 
 const router = express.Router();
 
-router.delete('/:id', deleteComment);
+router.delete('/:id', protect, deleteComment);
 
 export default router;
-

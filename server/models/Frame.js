@@ -31,6 +31,11 @@ const frameSchema = new mongoose.Schema(
       type: String,
       default: '/images/placeholder.jpg',
     },
+    cloudinaryPublicId: {
+      type: String,
+      default: null,
+      trim: true,
+    },
     moment: {
       type: String,
       required: [true, 'Moment caption is required'],

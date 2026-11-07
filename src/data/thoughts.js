@@ -4,8 +4,8 @@ export const thoughts = [
     text: 'A photograph is not an attempt to freeze time. It is a humble confession that time is winning, but for one split sixteenth of a second, we refused to look away.',
     mood: 'Nostalgic',
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2024-10-10T09:15:00Z',
@@ -30,8 +30,8 @@ export const thoughts = [
     text: 'Quietness is not empty space; it is full of answers you could not hear above the noise of your own hurry.',
     mood: 'Calm',
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2024-08-30T14:10:00Z',
@@ -69,8 +69,8 @@ export const thoughts = [
     text: 'The best lens is neither the sharpest nor the fastest. It is simply the curiosity to walk two paces to the left and kneel down in the dust.',
     mood: 'Curious',
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2024-06-25T16:50:00Z',
@@ -108,8 +108,8 @@ export const thoughts = [
     text: 'The horizon has no end; it is only a polite boundary between what your eyes can measure and what your heart desires to wander.',
     mood: 'Wanderlust',
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2024-03-12T13:45:00Z',

@@ -1,0 +1,9 @@
+# Robots.txt for Through My Frames 2.0
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /upload
+Disallow: /login
+Disallow: /signup
+
+Sitemap: https://through-my-frames.vercel.app/sitemap.xml

@@ -16,7 +16,7 @@ export const frames = [
         id: 'c1',
         author: {
           username: 'Aman',
-          name: 'Aman Misra',
+          name: 'Aman Mishra',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
         },
         content: 'The gradient of morning light reflecting on the marble is otherworldly, Ayush. Incredible framing.',
@@ -34,8 +34,8 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2026-06-01T07:12:00Z',
@@ -66,8 +66,8 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2026-06-01T07:12:00Z',
@@ -87,8 +87,8 @@ export const frames = [
     likes: 2,
     comments: [],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2026-06-01T07:12:00Z',
@@ -111,7 +111,7 @@ export const frames = [
         id: 'c6',
         author: {
           username: 'Aman',
-          name: 'Aman Misra',
+          name: 'Aman Mishra',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
         },
         content: 'The tone curve here is immaculate. Nostalgia distilled.',
@@ -119,8 +119,8 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2026-06-01T07:12:00Z',
@@ -142,8 +142,8 @@ export const frames = [
       {
         id: 'c8',
         author: {
-          username: 'ayushmisra',
-          name: 'Ayush Misra',
+          username: 'ayushmishra',
+          name: 'Ayush Mishra',
           avatar: '/images/honey.jpg',
         },
         content: 'Intimate and dignified. Look at the mud textures on his palms.',
@@ -151,8 +151,8 @@ export const frames = [
       },
     ],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2026-06-01T07:12:00Z',
@@ -172,8 +172,8 @@ export const frames = [
     likes: 1,
     comments: [],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     createdAt: '2026-06-01T07:12:00Z',

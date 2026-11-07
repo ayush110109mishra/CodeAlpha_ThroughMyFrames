@@ -2,21 +2,37 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
-import { Camera, ArrowRight, Lock, Mail, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Camera, ArrowRight, Lock, Mail, User, AtSign, AlertCircle } from 'lucide-react';
+import { MetaSEO } from '../components/seo/MetaSEO';
 
 const signupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(2, 'Name must be at least 2 characters').trim(),
+  username: z
+    .string()
+    .min(2, 'Username must be at least 2 characters')
+    .max(30, 'Username cannot exceed 30 characters')
+    .regex(/^[a-zA-Z0-9_.-]+$/, 'Username can only contain letters, numbers, dots, and underscores')
+    .trim()
+    .toLowerCase(),
+  email: z.string().email('Please enter a valid email address').trim().toLowerCase(),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
 export function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { showToast } = useToast();
+  const { signup } = useAuth();
+
+  const redirectTarget =
+    location.state?.from?.pathname || searchParams.get('redirect') || null;
 
   const {
     register,
@@ -28,15 +44,30 @@ export function SignupPage() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    setTimeout(() => {
+    setErrorMessage('');
+
+    try {
+      const user = await signup(data);
+      showToast(`Welcome to Through My Frames, ${user.name}!`, 'success');
+      navigate(redirectTarget || `/u/${user.username}`, { replace: true });
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        'Could not create account. Please check your information and try again.';
+      setErrorMessage(msg);
+      showToast(msg, 'error');
+    } finally {
       setIsLoading(false);
-      showToast(`Welcome to Through My Frames, ${data.name}!`, 'success');
-      navigate('/u/ayushmisra');
-    }, 700);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-stretch">
+      <MetaSEO
+        title="Create Account — Join the Living Journal"
+        description="Join Through My Frames to preserve stillness, collect photographs, and share reflections."
+        path="/signup"
+      />
       {/* Left Column: Visual Photo Split */}
       <div className="hidden lg:block lg:w-1/2 relative bg-surface overflow-hidden">
         <img
@@ -69,9 +100,16 @@ export function SignupPage() {
               Join the Journal
             </h1>
             <p className="text-xs text-muted">
-              Create an account to curate collections, record quiet reflections, and follow fellow wanderers.
+              Create an account to curate collections, record reflections, and follow fellow wanderers.
             </p>
           </div>
+
+          {errorMessage && (
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Full Name */}
@@ -83,13 +121,34 @@ export function SignupPage() {
                 <User className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
+                  autoComplete="name"
                   {...register('name')}
                   placeholder="e.g. Maya Sharma"
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent shadow-warm-sm"
                 />
               </div>
               {errors.name && (
                 <p className="text-[11px] text-red-500 mt-1">{errors.name.message}</p>
+              )}
+            </div>
+
+            {/* Username */}
+            <div className="space-y-1">
+              <label className="text-2xs font-mono uppercase tracking-wider text-muted block font-semibold">
+                Username
+              </label>
+              <div className="relative">
+                <AtSign className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  autoComplete="username"
+                  {...register('username')}
+                  placeholder="mayasharma"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent shadow-warm-sm"
+                />
+              </div>
+              {errors.username && (
+                <p className="text-[11px] text-red-500 mt-1">{errors.username.message}</p>
               )}
             </div>
 
@@ -102,9 +161,10 @@ export function SignupPage() {
                 <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
+                  autoComplete="email"
                   {...register('email')}
                   placeholder="maya@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent shadow-warm-sm"
                 />
               </div>
               {errors.email && (
@@ -115,15 +175,16 @@ export function SignupPage() {
             {/* Password Field */}
             <div className="space-y-1">
               <label className="text-2xs font-mono uppercase tracking-wider text-muted block font-semibold">
-                Password
+                Password (min 8 characters)
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
+                  autoComplete="new-password"
                   {...register('password')}
-                  placeholder="At least 6 characters"
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"
+                  placeholder="••••••••"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent shadow-warm-sm"
                 />
               </div>
               {errors.password && (
@@ -145,7 +206,10 @@ export function SignupPage() {
 
           <p className="text-xs text-center text-muted pt-2">
             Already have an account?{' '}
-            <Link to="/login" className="text-accent font-medium hover:underline">
+            <Link
+              to={redirectTarget ? `/login?redirect=${encodeURIComponent(redirectTarget)}` : '/login'}
+              className="text-accent font-medium hover:underline"
+            >
               Sign in
             </Link>
           </p>
@@ -158,4 +222,3 @@ export function SignupPage() {
     </div>
   );
 }
-

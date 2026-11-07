@@ -1,9 +1,9 @@
 export const photographerData = {
-  name: 'Ayush Misra',
+  name: 'Ayush Mishra',
   title: 'Visual Storyteller, Chronicler of Sacred India & Essayist',
   tagline: 'Finding the sacred in the mundane; capturing the quiet breaths between heartbeats.',
   portrait: '/images/honey.jpg',
-  portraitAlt: 'Ayush Misra',
+  portraitAlt: 'Ayush Mishra',
   location: 'Lucknow, Uttar Pradesh, India',
   yearsActive: '2016 – Present',
   statement:

@@ -1,7 +1,7 @@
 export const users = [
   {
-    username: 'ayushmisra',
-    name: 'Ayush Misra',
+    username: 'ayushmishra',
+    name: 'Ayush Mishra',
     role: 'Photographer & Visual Essayist',
     avatar: '/images/honey.jpg',
     cover: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80',
@@ -15,7 +15,7 @@ export const users = [
   },
   {
     username: 'Aman',
-    name: 'Aman Misra',
+    name: 'Aman Mishra',
     role: 'B.com student at the Delhi university',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
     cover: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80',

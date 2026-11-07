@@ -5,31 +5,72 @@ import { Heart, Bookmark, MapPin, MessageCircle } from 'lucide-react';
 import { MoodChip } from '../ui/MoodChip';
 import { frameService } from '../../services/frameService';
 import { useToast } from '../ui/Toast';
+import { useAuth } from '../../context/AuthContext';
+import { getOptimizedImageUrl } from '../../lib/cloudinary';
 import { cn } from '../../lib/utils';
 
 export function FrameCard({ frame, onOpenLightbox, priority = false }) {
-  const [isLiked, setIsLiked] = useState(frame.isLiked || false);
-  const [likesCount, setLikesCount] = useState(frame.likes || 0);
-  const [isSaved, setIsSaved] = useState(frame.isSaved || false);
-  const [imgSrc, setImgSrc] = useState(frame.image);
+  const frameId = frame.id || frame._id;
+  const [isLiked, setIsLiked] = useState(Boolean(frame.likedByMe || frame.isLiked));
+  const [likesCount, setLikesCount] = useState(frame.likesCount || frame.likes || 0);
+  const [isSaved, setIsSaved] = useState(Boolean(frame.savedByMe || frame.isSaved));
+  const [imgSrc, setImgSrc] = useState(() =>
+    getOptimizedImageUrl(frame.image, { width: 800 })
+  );
+
   const { showToast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const handleLike = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const nextState = !isLiked;
+
+    if (!isAuthenticated) {
+      showToast('Please sign in to record your appreciation', 'info');
+      return;
+    }
+
+    const previousLiked = isLiked;
+    const previousCount = likesCount;
+
+    // Optimistic UI update
+    const nextState = !previousLiked;
     setIsLiked(nextState);
-    setLikesCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
-    await frameService.toggleLike(frame.id);
+    setLikesCount(nextState ? previousCount + 1 : Math.max(0, previousCount - 1));
+
+    try {
+      const res = await frameService.toggleLike(frameId);
+      if (typeof res?.likesCount === 'number') {
+        setLikesCount(res.likesCount);
+      }
+    } catch (err) {
+      // Rollback on error
+      setIsLiked(previousLiked);
+      setLikesCount(previousCount);
+      showToast('Could not register like. Please try again.', 'error');
+    }
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const nextState = !isSaved;
+
+    if (!isAuthenticated) {
+      showToast('Please sign in to bookmark frames to your collection', 'info');
+      return;
+    }
+
+    const previousSaved = isSaved;
+    const nextState = !previousSaved;
     setIsSaved(nextState);
-    await frameService.toggleSave(frame.id);
-    showToast(nextState ? 'Frame saved to collection' : 'Frame removed from saved', 'info');
+
+    try {
+      await frameService.toggleSave(frameId);
+      showToast(nextState ? 'Frame saved to your collection' : 'Frame removed from saved', 'info');
+    } catch (err) {
+      setIsSaved(previousSaved);
+      showToast('Could not update saved frame', 'error');
+    }
   };
 
   const handleImageError = () => {
@@ -51,7 +92,7 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
           }
         }}
       >
-        <Link to={`/frame/${frame.id}`} className="block">
+        <Link to={`/frame/${frameId}`} className="block">
           <img
             src={imgSrc}
             alt={frame.moment || `Photograph from ${frame.location}`}
@@ -97,7 +138,7 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
       {/* Frame Details & Moment */}
       <div className="p-4 flex flex-col flex-1 justify-between gap-3 bg-surface">
         {/* Moment handwritten excerpt */}
-        <Link to={`/frame/${frame.id}`} className="block group-hover:text-accent transition-colors">
+        <Link to={`/frame/${frameId}`} className="block group-hover:text-accent transition-colors">
           <p className="font-handwritten text-lg sm:text-xl text-ink leading-snug line-clamp-2">
             "{frame.moment}"
           </p>
@@ -110,8 +151,11 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <img
-              src={frame.author?.avatar}
+              src={frame.author?.avatar || '/images/honey.jpg'}
               alt={frame.author?.name}
+              onError={(e) => {
+                e.target.src = '/images/honey.jpg';
+              }}
               className="w-6 h-6 rounded-full object-cover border border-line"
             />
             <span className="text-[12px] font-medium text-ink truncate max-w-[110px]">
@@ -139,7 +183,7 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
 
             {/* Comment count link */}
             <Link
-              to={`/frame/${frame.id}#comments`}
+              to={`/frame/${frameId}#comments`}
               className="flex items-center gap-1 hover:text-accent transition-colors text-[11px]"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -151,4 +195,3 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
     </article>
   );
 }
-

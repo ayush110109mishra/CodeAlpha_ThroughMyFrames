@@ -1,5 +1,6 @@
 import { Photographer } from '../models/Photographer.js';
 import { Frame } from '../models/Frame.js';
+import { Message } from '../models/Message.js';
 import { sendSuccess, sendError } from '../utils/apiResponse.js';
 
 /**
@@ -49,7 +50,7 @@ export const getPhotographer = async (req, res, next) => {
 /**
  * @desc    Submit a letter / print inquiry to the photographer
  * @route   POST /api/photographer/contact
- * @access  Public
+ * @access  Public (Rate-limited)
  */
 export const submitContact = async (req, res, next) => {
   try {
@@ -59,17 +60,27 @@ export const submitContact = async (req, res, next) => {
       return sendError(res, 'Email and message are required', 400);
     }
 
-    // In Phase 2, we log the message and return success.
-    // In Phase 3, this can trigger nodemailer / Resend email dispatch.
-    console.log(`📩 [Letter Received for Ayush Misra]: From ${name || 'Anonymous'} (${email}) [${type}]: ${message}`);
+    // Persist message to database
+    const savedMessage = await Message.create({
+      name: (name || '').trim() || 'Anonymous Wanderer',
+      email: email.trim().toLowerCase(),
+      type: type || 'Print Inquiry',
+      message: message.trim(),
+    });
+
+    console.log(
+      `📩 [Letter Stored in MongoDB]: From ${savedMessage.name} (${savedMessage.email}) [${savedMessage.type}]`
+    );
 
     return sendSuccess(
       res,
-      { sentAt: new Date().toISOString() },
+      {
+        id: savedMessage._id,
+        sentAt: savedMessage.createdAt,
+      },
       'Your letter has reached Ayush. You will receive a response shortly.'
     );
   } catch (error) {
     next(error);
   }
 };
-

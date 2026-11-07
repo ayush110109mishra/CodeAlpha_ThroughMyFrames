@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { HeroCanvas } from '../components/three/HeroCanvas';
+import { FallbackHero } from '../components/three/FallbackHero';
 import { FrameCard } from '../components/cards/FrameCard';
 import { ThoughtCard } from '../components/cards/ThoughtCard';
 import { TripCard } from '../components/cards/TripCard';
@@ -11,6 +11,7 @@ import { frameService } from '../services/frameService';
 import { thoughtService } from '../services/thoughtService';
 import { tripService } from '../services/tripService';
 import { collectionService } from '../services/collectionService';
+import { MetaSEO } from '../components/seo/MetaSEO';
 import {
   ArrowRight,
   Sparkles,
@@ -22,6 +23,11 @@ import {
   Quote,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+// Lazy-load Three.js 3D Hero Canvas
+const HeroCanvas = lazy(() =>
+  import('../components/three/HeroCanvas').then((m) => ({ default: m.HeroCanvas }))
+);
 
 export function LandingPage() {
   const [frames, setFrames] = useState([]);
@@ -52,9 +58,17 @@ export function LandingPage() {
 
   return (
     <div className="flex flex-col gap-24 sm:gap-32 pb-20">
-      {/* 1. 3D R3F Hero Section */}
+      <MetaSEO
+        title="Through My Frames 2.0 — Photos. Places. Thoughts."
+        description="A quiet, curious art-journal and 3D gallery where people explore photographs, places, reflections, and thoughts."
+        path="/"
+      />
+
+      {/* 1. 3D R3F Hero Section with 2D Fallback */}
       <section className="relative">
-        <HeroCanvas frames={frames} />
+        <Suspense fallback={<FallbackHero featuredFrames={frames} />}>
+          <HeroCanvas frames={frames} />
+        </Suspense>
       </section>
 
       {/* 2. Featured Frames Section */}
@@ -248,7 +262,7 @@ export function LandingPage() {
               <div className="relative aspect-[3/4] max-w-sm mx-auto rounded-2xl overflow-hidden shadow-warm-md border border-line">
                 <img
                   src="/images/honey.jpg"
-                  alt="Ayush Misra"
+                  alt="Ayush Mishra"
                   onError={(e) => {
                     e.target.src = '/images/placeholder.jpg';
                   }}
@@ -262,7 +276,7 @@ export function LandingPage() {
                 Behind the Viewfinder
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl text-ink font-medium leading-tight">
-                Ayush Misra
+                Ayush Mishra
               </h2>
               <p className="font-handwritten text-xl sm:text-2xl text-accent">
                 "Photography is fundamentally an act of quiet reverence."
@@ -277,7 +291,7 @@ export function LandingPage() {
                     Read Personal Story & Gear
                   </Button>
                 </Link>
-                <Link to="/u/ayushmisra">
+                <Link to="/u/ayushmishra">
                   <Button variant="secondary" size="md">
                     View Profile
                   </Button>

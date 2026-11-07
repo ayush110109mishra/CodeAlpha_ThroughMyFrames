@@ -1,19 +1,15 @@
 import { apiClient } from './api';
 import { trips as initialTrips } from '../data/trips';
 
-/**
- * ==============================================================================
- * Trip Service (Frontend API Layer)
- * ==============================================================================
- * Connects to `/api/trips` with fallback to local wander narratives.
- */
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 export const tripService = {
   async getTrips() {
     try {
       const response = await apiClient.get('/trips');
       return response.data || response;
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return initialTrips;
     }
   },
@@ -22,7 +18,8 @@ export const tripService = {
     try {
       const response = await apiClient.get(`/trips/${id}`);
       return response.data || response;
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return initialTrips.find((t) => t.id === id || t._id === id) || null;
     }
   },
@@ -31,7 +28,8 @@ export const tripService = {
     try {
       const trips = await this.getTrips();
       return trips[0] || initialTrips[0];
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return initialTrips[0];
     }
   },

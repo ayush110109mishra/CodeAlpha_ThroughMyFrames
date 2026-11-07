@@ -11,12 +11,25 @@ import { MoodChip } from '../components/ui/MoodChip';
 import { Button } from '../components/ui/Button';
 import { MOODS, CATEGORIES } from '../lib/constants';
 import { useToast } from '../components/ui/Toast';
-import { UploadCloud, Image, FileText, Sparkles, MapPin, Check } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import {
+  UploadCloud,
+  Image as ImageIcon,
+  FileText,
+  Sparkles,
+  MapPin,
+  Check,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react';
 import { cn } from '../lib/utils';
+import { MetaSEO } from '../components/seo/MetaSEO';
 
-// Zod schema
 const frameSchema = z.object({
-  moment: z.string().min(5, 'Please provide at least a short sentence').max(280, 'Max 280 characters'),
+  moment: z
+    .string()
+    .min(5, 'Please provide at least a short sentence')
+    .max(280, 'Moment caption cannot exceed 280 characters'),
   location: z.string().optional(),
   category: z.string().min(1, 'Please select a category'),
 });
@@ -24,10 +37,20 @@ const frameSchema = z.object({
 export function UploadPage() {
   const [mode, setMode] = useState('photo'); // 'photo' | 'thought'
   const [selectedMood, setSelectedMood] = useState('Calm');
-  const [imagePreview, setImagePreview] = useState('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');
+  const [imagePreview, setImagePreview] = useState(
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+  );
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+  );
+  const [uploadedPublicId, setUploadedPublicId] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
 
   const {
     register,
@@ -37,7 +60,8 @@ export function UploadPage() {
   } = useForm({
     resolver: zodResolver(frameSchema),
     defaultValues: {
-      moment: '5:45 AM. The dew clung to stone balustrades while the first sunbeam ignited the horizon.',
+      moment:
+        '5:45 AM. The dew clung to stone balustrades while the first sunbeam ignited the horizon.',
       location: 'Pushkar, Rajasthan',
       category: 'Travel',
     },
@@ -47,62 +71,106 @@ export function UploadPage() {
   const watchedLocation = watch('location') || '';
   const watchedCategory = watch('category') || 'Travel';
 
-  // Handle local file drop / selection
+  // Process and upload image to backend Cloudinary endpoint
+  const handleUploadFile = async (file) => {
+    if (!file) return;
+
+    // Validate type and size
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      showToast('Please upload a JPEG, PNG, or WebP image', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image file size must be less than 5MB', 'error');
+      return;
+    }
+
+    // Set instant local preview
+    const localUrl = URL.createObjectURL(file);
+    setImagePreview(localUrl);
+    setIsUploadingImage(true);
+
+    try {
+      const result = await frameService.uploadImage(file);
+      setUploadedImageUrl(result.url);
+      setUploadedPublicId(result.publicId || null);
+      showToast('Image uploaded and optimized for gallery view', 'success');
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Image upload failed';
+      showToast(`Upload failed: ${msg}`, 'error');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (file) handleUploadFile(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleUploadFile(file);
   };
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
       if (mode === 'photo') {
+        if (!uploadedImageUrl) {
+          showToast('Please select and upload a photograph first', 'error');
+          setIsSubmitting(false);
+          return;
+        }
+
         const newFrame = await frameService.createFrame({
-          image: imagePreview,
+          image: uploadedImageUrl,
+          cloudinaryPublicId: uploadedPublicId,
           fallbackImage: '/images/placeholder.jpg',
           moment: data.moment,
           mood: selectedMood,
           category: data.category,
           location: data.location || 'Undisclosed Location',
           camera: {
-            body: 'Sony A7 IV',
-            lens: 'FE 35mm f/1.4 GM',
-            aperture: 'f/2.8',
-            shutterSpeed: '1/320s',
-            iso: '100',
-            focalLength: '35mm',
-          },
-          author: {
-            username: 'ayushmisra',
-            name: 'Ayush Misra',
-            avatar: '/images/honey.jpg',
+            body: 'Mobile Photography',
+            lens: 'Wide Angle',
+            settings: 'Natural Light',
           },
         });
-        showToast('Frame created and published into the gallery!', 'success');
-        navigate(`/frame/${newFrame.id}`);
+
+        showToast('Frame created and published into the living gallery!', 'success');
+        navigate(`/frame/${newFrame.id || newFrame._id}`);
       } else {
         await thoughtService.createThought({
           text: data.moment,
           mood: selectedMood,
-          tags: ['Living Journal'],
+          tags: [data.category || 'Living Journal'],
         });
         showToast('Thought published to the living journal!', 'success');
         navigate('/thoughts');
       }
     } catch (err) {
-      showToast('Could not publish frame. Please try again.', 'error');
+      const msg = err.response?.data?.message || 'Could not publish frame. Please try again.';
+      showToast(msg, 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Mock frame for live preview
+  // Preview objects
   const previewFrame = {
     id: 'preview',
     image: imagePreview,
@@ -112,9 +180,9 @@ export function UploadPage() {
     location: watchedLocation,
     likes: 0,
     comments: [],
-    author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+    author: user || {
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
   };
@@ -123,18 +191,25 @@ export function UploadPage() {
     id: 'preview-thought',
     text: watchedMoment,
     mood: selectedMood,
-    tags: ['Preview'],
-    background: 'linear-gradient(135deg, rgba(194, 105, 62, 0.08) 0%, rgba(233, 201, 168, 0.18) 100%)',
+    tags: [watchedCategory || 'Preview'],
+    background:
+      'linear-gradient(135deg, rgba(194, 105, 62, 0.08) 0%, rgba(233, 201, 168, 0.18) 100%)',
     createdAt: new Date().toISOString(),
-    author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+    author: user || {
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 w-full space-y-10">
+      <MetaSEO
+        title="Publish Frame — Creation Studio"
+        description="Share a visual photograph or quiet contemplation into the living journal."
+        path="/upload"
+      />
+
       {/* Page Header */}
       <div className="space-y-3 pb-6 border-b border-line">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-accent/15 text-accent text-2xs font-mono uppercase tracking-widest font-semibold">
@@ -159,7 +234,7 @@ export function UploadPage() {
                 : 'bg-surface text-muted border-line hover:text-ink'
             )}
           >
-            <Image className="w-3.5 h-3.5" /> Photo Frame
+            <ImageIcon className="w-3.5 h-3.5" /> Photo Frame
           </button>
           <button
             type="button"
@@ -187,23 +262,43 @@ export function UploadPage() {
           {mode === 'photo' && (
             <div className="space-y-2">
               <label className="text-2xs uppercase font-mono tracking-wider text-muted block font-semibold">
-                Photograph (Drop or Select)
+                Photograph (Drag & Drop or Browse)
               </label>
-              <label className="relative border-2 border-dashed border-line hover:border-accent rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-bg/50">
-                <UploadCloud className="w-8 h-8 text-accent mb-2" />
-                <span className="text-xs text-ink font-medium">
-                  Click or drag photo here
-                </span>
-                <span className="text-[11px] text-muted mt-1">
-                  Supports JPG, PNG, WebP (high resolution recommended)
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={cn(
+                  'relative border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center transition-all bg-bg/50',
+                  isDragging ? 'border-accent bg-accent/5 scale-[1.01]' : 'border-line hover:border-accent'
+                )}
+              >
+                <label className="cursor-pointer flex flex-col items-center justify-center w-full">
+                  {isUploadingImage ? (
+                    <div className="flex flex-col items-center py-4 text-accent">
+                      <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                      <span className="text-xs font-medium">Uploading & optimizing image...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-8 h-8 text-accent mb-2" />
+                      <span className="text-xs text-ink font-medium">
+                        Click or drag photo here
+                      </span>
+                      <span className="text-[11px] text-muted mt-1">
+                        Supports JPG, PNG, WebP (Max 5MB)
+                      </span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileChange}
+                    disabled={isUploadingImage}
+                    className="hidden"
+                  />
+                </label>
+              </div>
             </div>
           )}
 
@@ -213,7 +308,12 @@ export function UploadPage() {
               <label className="text-2xs uppercase font-mono tracking-wider text-muted font-semibold">
                 {mode === 'photo' ? 'Moment Caption (Handwritten style)' : 'Living Thought'}
               </label>
-              <span className="text-[11px] font-mono text-muted">
+              <span
+                className={cn(
+                  'text-[11px] font-mono',
+                  watchedMoment.length > 260 ? 'text-amber-500 font-bold' : 'text-muted'
+                )}
+              >
                 {watchedMoment.length} / 280
               </span>
             </div>
@@ -223,100 +323,125 @@ export function UploadPage() {
               maxLength={280}
               placeholder={
                 mode === 'photo'
-                  ? 'Describe the temperature, the scent of dust, the silence between shutter clicks...'
-                  : 'Write a contemplation on space, travel, time, or light...'
+                  ? 'Describe the stillness, light, or poetry of this moment...'
+                  : 'Record a contemplative thought, observation, or quote...'
               }
-              className="w-full p-3.5 bg-bg border border-line rounded-2xl text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none transition-all"
+              className="w-full p-3.5 bg-bg border border-line rounded-2xl text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none font-sans"
             />
             {errors.moment && (
-              <p className="text-[11px] text-red-500">{errors.moment.message}</p>
+              <p className="text-[11px] text-red-500 mt-1">{errors.moment.message}</p>
             )}
           </div>
 
-          {/* Mood Chips Selector */}
+          {/* Atmospheric Mood Tag */}
           <div className="space-y-2">
-            <label className="text-2xs uppercase font-mono tracking-wider text-muted font-semibold block">
+            <label className="text-2xs uppercase font-mono tracking-wider text-muted block font-semibold">
               State of Mind (Mood)
             </label>
             <div className="flex flex-wrap gap-2">
-              {MOODS.filter((m) => m !== 'All').map((mood) => (
-                <MoodChip
-                  key={mood}
-                  mood={mood}
-                  active={selectedMood === mood}
-                  onClick={() => setSelectedMood(mood)}
-                />
-              ))}
+              {MOODS.map((mood) => {
+                const isSelected = selectedMood === mood;
+                return (
+                  <button
+                    key={mood}
+                    type="button"
+                    onClick={() => setSelectedMood(mood)}
+                    className={cn(
+                      'px-3 py-1.5 rounded-pill text-xs font-medium transition-all border',
+                      isSelected
+                        ? 'bg-accent text-white border-accent shadow-warm-sm'
+                        : 'bg-bg text-muted border-line hover:text-ink hover:border-muted'
+                    )}
+                  >
+                    {mood}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Category Select (if photo mode) */}
-          {mode === 'photo' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-2xs uppercase font-mono tracking-wider text-muted font-semibold block">
-                  Category
-                </label>
-                <select
-                  {...register('category')}
-                  className="w-full px-3.5 py-2.5 bg-bg border border-line rounded-pill text-xs text-ink focus:outline-none focus:border-accent"
+          {/* Category Selection */}
+          <div className="space-y-2">
+            <label className="text-2xs uppercase font-mono tracking-wider text-muted block font-semibold">
+              Category
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((cat) => (
+                <label
+                  key={cat}
+                  className={cn(
+                    'px-3 py-1.5 rounded-pill text-xs font-medium cursor-pointer transition-all border',
+                    watchedCategory === cat
+                      ? 'bg-ink text-surface border-ink'
+                      : 'bg-bg text-muted border-line hover:text-ink'
+                  )}
                 >
-                  {CATEGORIES.filter((c) => c !== 'All').map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Location Input */}
-              <div className="space-y-1">
-                <label className="text-2xs uppercase font-mono tracking-wider text-muted font-semibold block">
-                  Location (optional)
-                </label>
-                <div className="relative">
-                  <MapPin className="w-3.5 h-3.5 text-accent absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
-                    type="text"
-                    {...register('location')}
-                    placeholder="e.g. Varanasi, Ganga Ghats"
-                    className="w-full pl-9 pr-3.5 py-2 bg-bg border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"
+                    type="radio"
+                    value={cat}
+                    {...register('category')}
+                    className="hidden"
                   />
-                </div>
+                  {cat}
+                </label>
+              ))}
+            </div>
+            {errors.category && (
+              <p className="text-[11px] text-red-500 mt-1">{errors.category.message}</p>
+            )}
+          </div>
+
+          {/* Location Input (photo mode only) */}
+          {mode === 'photo' && (
+            <div className="space-y-1">
+              <label className="text-2xs uppercase font-mono tracking-wider text-muted block font-semibold">
+                Location Visited
+              </label>
+              <div className="relative">
+                <MapPin className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  {...register('location')}
+                  placeholder="e.g. Manikarnika Ghat, Varanasi"
+                  className="w-full pl-10 pr-4 py-2.5 bg-bg border border-line rounded-pill text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"
+                />
               </div>
             </div>
           )}
 
           {/* Submit Button */}
-          <div className="pt-4 border-t border-line flex items-center justify-end">
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              isLoading={isSubmitting}
-            >
-              Publish Frame
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full mt-4"
+            isLoading={isSubmitting || isUploadingImage}
+            icon={Check}
+          >
+            {mode === 'photo' ? 'Publish Frame' : 'Publish Thought'}
+          </Button>
         </form>
 
-        {/* Right Live Preview Card */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center gap-2 text-2xs uppercase tracking-widest font-mono text-muted font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-accent" />
-            <span>Live Interactive Preview</span>
+        {/* Right Preview */}
+        <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-28">
+          <div className="flex items-center justify-between">
+            <span className="text-2xs uppercase font-mono tracking-wider text-muted font-semibold">
+              Live Preview
+            </span>
+            <span className="text-[11px] text-accent font-medium">WYSIWYG</span>
           </div>
 
-          <div className="sticky top-28">
-            {mode === 'photo' ? (
-              <FrameCard frame={previewFrame} />
-            ) : (
+          {mode === 'photo' ? (
+            <div className="max-w-md mx-auto">
+              <FrameCard frame={previewFrame} priority />
+            </div>
+          ) : (
+            <div className="max-w-md mx-auto">
               <ThoughtCard thought={previewThought} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-

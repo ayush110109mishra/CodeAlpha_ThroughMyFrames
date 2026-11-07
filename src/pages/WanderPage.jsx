@@ -4,6 +4,7 @@ import { tripService } from '../services/tripService';
 import { TripCard } from '../components/cards/TripCard';
 import { MapPin, Compass, Calendar, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { MetaSEO } from '../components/seo/MetaSEO';
 
 export function WanderPage() {
   const [selectedTripId, setSelectedTripId] = useState(null);
@@ -20,6 +21,11 @@ export function WanderPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 w-full space-y-16">
+      <MetaSEO
+        title="Wander — Cartography of Light & Journeys"
+        description="Traversing sacred rivers, high cold desert ridges, and forgotten hamlets across India."
+        path="/wander"
+      />
       {/* Page Header */}
       <div className="space-y-3">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-accent/15 text-accent text-2xs font-mono uppercase tracking-widest font-semibold">

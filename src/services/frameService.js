@@ -4,13 +4,13 @@ import { storage } from '../lib/utils';
 
 /**
  * ==============================================================================
- * Frame Service (Frontend API Layer)
+ * Frame Service (Frontend API Layer - Phase 3)
  * ==============================================================================
  * Connects frontend components to the backend REST API (`/api/frames`).
- * Preserves exact method signatures and return shapes, with resilient fallback
- * to local mock data if the backend is not yet started.
+ * Real API mode is active by default. Mock fallback is ONLY used if VITE_USE_MOCK=true.
  */
 
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const STORAGE_KEY = 'custom_frames';
 const LIKES_KEY = 'liked_frames';
 const SAVED_KEY = 'saved_frames';
@@ -22,15 +22,16 @@ function getLocalFrames() {
 
 export const frameService = {
   /**
-   * Fetch all frames with optional filters (mood, category, search, author)
+   * Fetch all frames with optional filters (mood, category, search, author, feed)
    */
-  async getFrames({ mood, category, search, author, sort = 'latest', page, limit } = {}) {
+  async getFrames({ mood, category, search, author, feed, sort = 'latest', page, limit } = {}) {
     try {
       const params = {};
       if (mood && mood !== 'All') params.mood = mood;
       if (category && category !== 'All') params.category = category;
       if (search && search.trim()) params.search = search.trim();
       if (author) params.author = author;
+      if (feed) params.feed = feed;
       if (sort) params.sort = sort;
       if (page) params.page = page;
       if (limit) params.limit = limit;
@@ -38,7 +39,9 @@ export const frameService = {
       const response = await apiClient.get('/frames', { params });
       return response.data || response;
     } catch (err) {
-      // Graceful offline fallback
+      if (!USE_MOCK) throw err;
+
+      // Offline fallback only when explicitly enabled
       let list = getLocalFrames();
       if (mood && mood !== 'All') {
         list = list.filter((f) => f.mood.toLowerCase() === mood.toLowerCase());
@@ -68,26 +71,16 @@ export const frameService = {
    * Fetch a single frame by its MongoDB _id or customId slug
    */
   async getFrameById(id) {
-    const likedList = storage.get(LIKES_KEY, []);
-    const savedList = storage.get(SAVED_KEY, []);
-
     try {
       const response = await apiClient.get(`/frames/${id}`);
-      const frame = response.data || response;
-      return {
-        ...frame,
-        isLiked: likedList.includes(id) || likedList.includes(frame.id),
-        isSaved: savedList.includes(id) || savedList.includes(frame.id),
-      };
+      return response.data || response;
     } catch (err) {
+      if (!USE_MOCK) throw err;
+
       const list = getLocalFrames();
       const frame = list.find((f) => f.id === id || f._id === id);
       if (!frame) return null;
-      return {
-        ...frame,
-        isLiked: likedList.includes(id),
-        isSaved: savedList.includes(id),
-      };
+      return frame;
     }
   },
 
@@ -98,7 +91,8 @@ export const frameService = {
     try {
       const frames = await this.getFrames({ limit, sort: 'popular' });
       return frames.slice(0, limit);
-    } catch {
+    } catch (err) {
+      if (!USE_MOCK) throw err;
       return getLocalFrames().slice(0, limit);
     }
   },
@@ -113,6 +107,8 @@ export const frameService = {
       });
       return response.data || response;
     } catch (err) {
+      if (!USE_MOCK) throw err;
+
       const list = getLocalFrames().filter((f) => f.id !== excludeId);
       if (!list.length) return getLocalFrames()[0];
       const randomIndex = Math.floor(Math.random() * list.length);
@@ -124,77 +120,93 @@ export const frameService = {
    * Toggle like count on a frame
    */
   async toggleLike(id) {
-    const likedList = storage.get(LIKES_KEY, []);
-    const isLiked = likedList.includes(id);
-    let updated;
-    if (isLiked) {
-      updated = likedList.filter((item) => item !== id);
-    } else {
-      updated = [...likedList, id];
-    }
-    storage.set(LIKES_KEY, updated);
-
-    // Synchronize with API if online
     try {
-      await apiClient.post(`/frames/${id}/like`);
+      const response = await apiClient.post(`/frames/${id}/like`);
+      const data = response.data || response;
+      return data;
     } catch (err) {
-      // Non-blocking: local storage holds state
-    }
+      if (!USE_MOCK) throw err;
 
-    return { isLiked: !isLiked };
+      const likedList = storage.get(LIKES_KEY, []);
+      const isLiked = likedList.includes(id);
+      const updated = isLiked ? likedList.filter((item) => item !== id) : [...likedList, id];
+      storage.set(LIKES_KEY, updated);
+      return { liked: !isLiked };
+    }
   },
 
   /**
-   * Toggle save (bookmark) state in browser storage
+   * Toggle bookmark/save state
    */
   async toggleSave(id) {
-    const savedList = storage.get(SAVED_KEY, []);
-    const isSaved = savedList.includes(id);
-    let updated;
-    if (isSaved) {
-      updated = savedList.filter((item) => item !== id);
-    } else {
-      updated = [...savedList, id];
+    try {
+      const response = await apiClient.post(`/frames/${id}/save`);
+      const data = response.data || response;
+      return data;
+    } catch (err) {
+      if (!USE_MOCK) throw err;
+
+      const savedList = storage.get(SAVED_KEY, []);
+      const isSaved = savedList.includes(id);
+      const updated = isSaved ? savedList.filter((item) => item !== id) : [...savedList, id];
+      storage.set(SAVED_KEY, updated);
+      return { saved: !isSaved };
     }
-    storage.set(SAVED_KEY, updated);
-    return { isSaved: !isSaved };
   },
 
   /**
    * Fetch all saved frames for profile tab
    */
   async getSavedFrames() {
-    const savedIds = storage.get(SAVED_KEY, []);
-    const all = await this.getFrames();
-    return all.filter((f) => savedIds.includes(f.id) || savedIds.includes(f._id));
+    try {
+      const response = await apiClient.get('/users/me/saved');
+      return response.data || response;
+    } catch (err) {
+      if (!USE_MOCK) throw err;
+      const savedIds = storage.get(SAVED_KEY, []);
+      const all = await this.getFrames();
+      return all.filter((f) => savedIds.includes(f.id) || savedIds.includes(f._id));
+    }
   },
 
   /**
    * Add a comment to a frame
    */
-  async addComment(frameId, { content, author }) {
+  async addComment(frameId, { content }) {
     try {
-      const response = await apiClient.post(`/frames/${frameId}/comments`, {
-        content,
-        authorId: author?._id,
-      });
+      const response = await apiClient.post(`/frames/${frameId}/comments`, { content });
       return response.data || response;
     } catch (err) {
+      if (!USE_MOCK) throw err;
+
       const newComment = {
         id: `c_${Date.now()}`,
-        author: author || {
-          username: 'ayushmisra',
-          name: 'Ayush Misra',
+        author: {
+          username: 'ayushmishra',
+          name: 'Ayush Mishra',
           avatar: '/images/honey.jpg',
         },
         content,
         createdAt: new Date().toISOString(),
       };
-      const frameCommentsKey = `frame_comments_${frameId}`;
-      const existing = storage.get(frameCommentsKey, []);
-      storage.set(frameCommentsKey, [newComment, ...existing]);
       return newComment;
     }
+  },
+
+  /**
+   * Delete a comment by ID
+   */
+  async deleteComment(commentId) {
+    const response = await apiClient.delete(`/comments/${commentId}`);
+    return response.data || response;
+  },
+
+  /**
+   * Delete a frame by ID
+   */
+  async deleteFrame(frameId) {
+    const response = await apiClient.delete(`/frames/${frameId}`);
+    return response.data || response;
   },
 
   /**
@@ -205,30 +217,32 @@ export const frameService = {
       const response = await apiClient.get(`/frames/${frameId}/comments`);
       return response.data || response;
     } catch (err) {
-      const frameCommentsKey = `frame_comments_${frameId}`;
-      const extra = storage.get(frameCommentsKey, []);
-      return [...extra, ...initialComments];
+      if (!USE_MOCK) throw err;
+      return initialComments;
     }
+  },
+
+  /**
+   * Upload an image to Cloudinary via backend
+   */
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await apiClient.post('/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data || response;
   },
 
   /**
    * Create a new frame
    */
   async createFrame(data) {
-    try {
-      const response = await apiClient.post('/frames', data);
-      return response.data || response;
-    } catch (err) {
-      const newFrame = {
-        id: `frame_${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        likes: 0,
-        comments: [],
-        ...data,
-      };
-      const custom = storage.get(STORAGE_KEY, []);
-      storage.set(STORAGE_KEY, [newFrame, ...custom]);
-      return newFrame;
-    }
+    const response = await apiClient.post('/frames', data);
+    return response.data || response;
   },
 };

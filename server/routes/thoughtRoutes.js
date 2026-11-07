@@ -8,12 +8,14 @@ import {
   updateThought,
   deleteThought,
 } from '../controllers/thoughtController.js';
+import { protect } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
 
 const createThoughtValidation = [
   body('text')
+    .trim()
     .notEmpty()
     .withMessage('Thought text cannot be empty')
     .isLength({ max: 500 })
@@ -25,13 +27,12 @@ router.get('/random', getRandomThought);
 router
   .route('/')
   .get(getThoughts)
-  .post(validate(createThoughtValidation), createThought);
+  .post(protect, validate(createThoughtValidation), createThought);
 
 router
   .route('/:id')
   .get(getThoughtById)
-  .put(updateThought)
-  .delete(deleteThought);
+  .put(protect, updateThought)
+  .delete(protect, deleteThought);
 
 export default router;
-

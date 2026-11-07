@@ -7,8 +7,8 @@ export const collections = [
     fallbackImage: '/images/placeholder.jpg',
     frameIds: ['taj-mahal', 'sunset', 'honey'],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     count: 3,
@@ -22,8 +22,8 @@ export const collections = [
     fallbackImage: '/images/placeholder.jpg',
     frameIds: ['sky', 'sunset', 'desert-solitude'],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     count: 3,
@@ -52,8 +52,8 @@ export const collections = [
     fallbackImage: '/images/placeholder.jpg',
     frameIds: ['desert-solitude', 'sky', 'taj-mahal'],
     author: {
-      username: 'ayushmisra',
-      name: 'Ayush Misra',
+      username: 'ayushmishra',
+      name: 'Ayush Mishra',
       avatar: '/images/honey.jpg',
     },
     count: 3,
