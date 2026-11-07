@@ -73,3 +73,51 @@ export const getMomentOfToday = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getRandomMoment = async (req, res, next) => {
+  try {
+    const frameCount = await Frame.countDocuments();
+    const thoughtCount = await Thought.countDocuments();
+
+    if (frameCount === 0 && thoughtCount === 0) {
+      return sendError(res, 'No moments available', 404);
+    }
+
+    const selectFrame = frameCount > 0 && (thoughtCount === 0 || Math.random() > 0.3);
+
+    if (selectFrame) {
+      const skipIndex = Math.floor(Math.random() * frameCount);
+      const frame = await Frame.findOne()
+        .skip(skipIndex)
+        .populate('author', 'name username avatar role');
+
+      return sendSuccess(
+        res,
+        {
+          isThought: false,
+          momentType: 'frame',
+          data: frame,
+        },
+        'Random moment retrieved successfully'
+      );
+    } else {
+      const skipIndex = Math.floor(Math.random() * thoughtCount);
+      const thought = await Thought.findOne()
+        .skip(skipIndex)
+        .populate('author', 'name username avatar role');
+
+      return sendSuccess(
+        res,
+        {
+          isThought: true,
+          momentType: 'thought',
+          data: thought,
+        },
+        'Random moment retrieved successfully'
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+

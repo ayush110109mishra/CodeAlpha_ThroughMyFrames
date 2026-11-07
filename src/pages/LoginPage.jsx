@@ -51,7 +51,9 @@ export function LoginPage() {
     } catch (err) {
       const msg =
         err.response?.data?.message ||
-        'Invalid credentials. Please verify your username/email and password.';
+        (err.code === 'ERR_NETWORK' || !err.response
+          ? 'Unable to connect to the backend server. Please make sure the server is running on port 5000.'
+          : 'Invalid credentials. Please verify your username/email and password.');
       setErrorMessage(msg);
       showToast(msg, 'error');
     } finally {
