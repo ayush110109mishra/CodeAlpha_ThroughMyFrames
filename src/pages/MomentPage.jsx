@@ -138,8 +138,11 @@ export function MomentPage() {
                     src={photoUrl || currentMoment.image}
                     alt={currentMoment.moment || 'Moment'}
                     onError={(e) => {
+                      const rawUrl = currentMoment.image;
                       const fallback = currentMoment.fallbackImage || '/images/placeholder.jpg';
-                      if (e.target.src !== fallback) {
+                      if (rawUrl && e.target.src !== rawUrl && rawUrl !== fallback) {
+                        e.target.src = rawUrl;
+                      } else if (e.target.src !== fallback) {
                         e.target.src = fallback;
                       }
                     }}

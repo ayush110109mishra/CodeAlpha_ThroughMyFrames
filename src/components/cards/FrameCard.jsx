@@ -74,8 +74,12 @@ export function FrameCard({ frame, onOpenLightbox, priority = false }) {
   };
 
   const handleImageError = () => {
+    const rawUrl = frame.image;
     const fallback = frame.fallbackImage || '/images/placeholder.jpg';
-    if (imgSrc !== fallback) {
+    // If the optimized URL failed, retry with un-transformed raw URL once
+    if (rawUrl && imgSrc !== rawUrl && rawUrl !== fallback) {
+      setImgSrc(rawUrl);
+    } else if (imgSrc !== fallback) {
       setImgSrc(fallback);
     }
   };

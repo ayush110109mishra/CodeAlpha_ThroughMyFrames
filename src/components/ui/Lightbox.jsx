@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, MapPin, Sparkles } from 'lucide-react';
+import { getOptimizedImageUrl } from '../../lib/cloudinary';
 
 export function Lightbox({ isOpen, onClose, currentFrame, onPrev, onNext, total, currentIndex }) {
   useEffect(() => {
@@ -101,11 +102,14 @@ export function Lightbox({ isOpen, onClose, currentFrame, onPrev, onNext, total,
           {/* Framed Image */}
           <div className="relative rounded-lg overflow-hidden shadow-2xl bg-black max-h-[72vh] flex items-center justify-center border border-white/10">
             <img
-              src={currentFrame.image}
+              src={getOptimizedImageUrl(currentFrame.image, { width: 1600 })}
               alt={currentFrame.moment || 'Frame'}
               onError={(e) => {
+                const rawUrl = currentFrame.image;
                 const fallback = currentFrame.fallbackImage || '/images/placeholder.jpg';
-                if (e.target.src !== fallback) {
+                if (rawUrl && e.target.src !== rawUrl && rawUrl !== fallback) {
+                  e.target.src = rawUrl;
+                } else if (e.target.src !== fallback) {
                   e.target.src = fallback;
                 }
               }}

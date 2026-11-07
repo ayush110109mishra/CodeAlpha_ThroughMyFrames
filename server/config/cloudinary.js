@@ -1,16 +1,23 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Explicitly load server/.env before reading variables
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
-/**
- * ==============================================================================
- * Cloudinary Configuration & Media Stream Uploader
- * ==============================================================================
- * WHY CLOUDINARY:
- * Provides secure asset hosting, automated responsive delivery transformations
- * (f_auto, q_auto), and global CDN distribution so photography assets load with
- * minimal latency worldwide.
- */
+const requiredEnv = ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
+
+if (missingEnv.length > 0) {
+  console.warn(
+    `[Cloudinary Config]: Missing credentials in server/.env (${missingEnv.join(', ')}). Image upload and Cloudinary API features will be disabled.`
+  );
+}
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || '',

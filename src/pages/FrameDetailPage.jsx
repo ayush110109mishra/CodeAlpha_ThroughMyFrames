@@ -266,7 +266,13 @@ export function FrameDetailPage() {
               src={optimizedPhotoUrl}
               alt={frame.moment}
               onError={(e) => {
-                e.target.src = frame.fallbackImage || '/images/placeholder.jpg';
+                const rawUrl = frame.image;
+                const fallback = frame.fallbackImage || '/images/placeholder.jpg';
+                if (rawUrl && e.target.src !== rawUrl && rawUrl !== fallback) {
+                  e.target.src = rawUrl;
+                } else if (e.target.src !== fallback) {
+                  e.target.src = fallback;
+                }
               }}
               className="w-full h-auto max-h-[75vh] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.01]"
             />
